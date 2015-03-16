@@ -16,6 +16,7 @@ var rtc = require('./lib/rtc.js');
 var dockerMgr = require('./lib/docker-mgr.js');
 
 var edx = require('./routes/edx-rt.js');
+var api = require('./routes/api-rt.js');
 
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var options = {
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', edx);
+app.use('/api/', api);
 
 
 // catch 404 and forward to error handler

@@ -66,7 +66,6 @@ function _updateUser(user, callback) {
                 'password': user.password,
                 'email': user.email,
                 'classroom': user.classroom,
-                'role': user.role,
                 'cameraSharing': user.cameraSharing,
                 'microphoneSharing': user.microphoneSharing,
                 'screenSharing': user.screenSharing,
@@ -74,7 +73,8 @@ function _updateUser(user, callback) {
                 'gitId': user.gitId,
                 'gitToken': user.gitToken,
                 'privateKey': user.privateKey,
-                'publicKey': user.publicKey
+                'publicKey': user.publicKey,
+                'edxId': user.edxId
             }
         }, function (err, result) {
             if (err) throw err;
@@ -105,6 +105,20 @@ function _login(name, password, callback) {
 function _getUserByEdxId(edxid, callback) {
     console.log('_getUserByEdxId'.cyan);
     db.collection(USER_COLLECTION).findOne({'edxId': edxid}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
+function _getUserByEmail(email, callback) {
+    console.log('_getUserByEmail'.cyan);
+    db.collection(USER_COLLECTION).findOne({'email': email}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
+function _getUserByName(name, callback) {
+    console.log('_getUserByName'.cyan);
+    db.collection(USER_COLLECTION).findOne({'name': name}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
@@ -213,8 +227,6 @@ function _updateDocker(docker, callback) {
                 'startBuildTime': docker.startBuildTime,
                 'buildTime': docker.buildTime,
                 'lastRunTime': docker.lastRunTime,
-                'running': docker.running,
-                'guid': docker.guid,
                 'host': docker.host,
                 'port': docker.port,
                 'contId': docker.contId,
@@ -240,11 +252,8 @@ function _updateLab(lab, callback) {
                 'name': lab.name,
                 'desc': lab.desc,
                 'dockerFile': lab.dockerFile,
-                'dockerType': lab.dockerType,
-                'teacher': lab.teacher,
                 'project': lab.project,
                 'creatingTime': lab.creatingTime,
-                'makeScripts': lab.makeScripts,
                 'status': lab.status
             }
         }, function (err, result) {
@@ -259,11 +268,8 @@ function _upsertLabByName(lab, callback) {
             $set: {
                 'desc': lab.desc,
                 'dockerFile': lab.dockerFile,
-                'dockerType': lab.dockerType,
-                'teacher': lab.teacher,
                 'project': lab.project,
                 'creatingTime': lab.creatingTime,
-                'makeScripts': lab.makeScripts,
                 'status': lab.status
             }
         },
@@ -368,3 +374,5 @@ exports.validateLab = _validateLab;
 exports.getUserResults = _getUserResults;
 exports.findResult = _findResult;
 exports.getUserByEdxId = _getUserByEdxId;
+exports.getUserByEmail = _getUserByEmail;
+exports.getUserByName = _getUserByName;
