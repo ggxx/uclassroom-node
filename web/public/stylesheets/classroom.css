@@ -1,0 +1,15 @@
+#left {
+	float: left;
+	width: 300px;
+}
+#middle {
+	margin-left: 305px;
+}
+#messages {
+	height: 200px; 
+}
+#messageList {
+	height: 160px;
+	overflow: auto;
+	border: solid 1px #eee;
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %> - Labs</title>
+    <link rel="stylesheet" href="/stylesheets/normalize.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap.css"/>
+    <link rel="stylesheet" href="/stylesheets/iconFont.css"/>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.widget.min.js"></script>
+    <script src="/javascripts/metro.min.js"></script>
+</head>
+<body class="metro">
+<div class="container">
+    <h2>Lab Management</h2>
+
+    <form>
+        <fieldset>
+            <legend>Lab List</legend>
+            <table class="table striped">
+                <thead>
+                <tr>
+                    <th class="text-left">Name</th>
+                    <th class="text-left">Build Time</th>
+                    <th class="text-left">Project</th>
+                    <th class="text-left">Status</th>
+                    <!--th class="text-left">#</th-->
+                </tr>
+                </thead>
+                <tbody>
+                <% labs.forEach(function(lab) { %>
+                <tr>
+                    <td class="right"><%= lab.name %></td>
+                    <td class="right"><%= lab.creatingTime %></td>
+                    <td class="right"><%= lab.project %></td>
+                    <td class="right"><%= lab.status %></td>
+                    <!--td class="right">
+                        <a href="/labs/<%= lab._id %>" class="small bg-green fg-white button">Edit</a>
+                    </td-->
+                </tr>
+                <% }); %>
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </fieldset>
+    </form>
+    <br/>
+
+    <form action="/labs" method="POST">
+        <fieldset>
+            <legend>Create New Lab</legend>
+            <label>Lab Name</label>
+
+            <div class="input-control text" data-role="input-control">
+                <input type="text" id="name" name="name" maxlength="16" required="required" autofocus="true"/>
+                <button class="btn-clear" tabindex="-1"></button>
+            </div>
+            <label>Lab Description</label>
+
+            <div class="input-control textarea" data-role="input-control">
+                <textarea id="desc" name="desc"></textarea>
+            </div>
+            <label>Git Project</label>
+
+            <div class="input-control select" data-role="input-control">
+                <select name="project" id="project" required="required">
+                    <% projects.forEach(function(project) { %>
+                    <option value="<%= project %>"><%= project %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <label>DockerFile - (your docker must FROM uclassroom/ucore-base)</label>
+
+            <div class="input-control textarea" data-role="input-control">
+					<textarea id="dockerFile" name="dockerFile" style="height:300px;">#        teacher/lab
+#
+#        VERSION 0.0.1
+
+FROM uclassroom/ucore-base
+MAINTAINER Guo Xu <ggxx120@gmail.com>
+
+ENTRYPOINT ["bash"]</textarea>
+            </div>
+            <input class="button bg-blue fg-white large" type="submit" value="Save" id="submit"/>
+            </input>
+            <span><%= message %></span>
+        </fieldset>
+    </form>
+</div>
+</body>
+</html>

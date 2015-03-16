@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/normalize.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap.css"/>
+    <link rel="stylesheet" href="/stylesheets/iconFont.css"/>
+    <link rel="stylesheet" href="/stylesheets/classroom.css"/>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.widget.min.js"></script>
+    <script src="/javascripts/metro.min.js"></script>
+</head>
+<body class="metro">
+<div class="container">
+    <div id="left">
+        <div id="setting" class="panel" data-role="panel">
+            <div class="panel-header bg-lightBlue fg-white">
+                Local Setting
+            </div>
+            <div class="panel-content">
+                <legend>Camera(W*H)</legend>
+                <input id="camWidthInput" min="1" max="1920" type="number" value="640"/>
+                <input id="camHeightInput" min="1" max="1080" type="number" value="360"/>
+                <a href="javascript:void(0)" id="shareCamButton" class="button small bg-green fg-white">ShareCamera</a>
+                <br/>
+                <br/>
+                <legend>Screen(W*H)</legend>
+                <input id="scrWidthInput" min="1" max="1920" type="number" value="1920"/>
+                <input id="scrHeightInput" min="1" max="1080" type="number" value="1080"/>
+                <a href="javascript:void(0)" id="shareScreenButton"
+                   class="button small bg-green fg-white">ShareScreen</a>
+            </div>
+        </div>
+        <div id="rooms" class="panel" data-role="panel">
+            <div class="panel-header bg-lightBlue fg-white">
+                Rooms
+            </div>
+            <div class="panel-content">
+                <ul id="roomlist">
+                </ul>
+                <input id="roomNameInput" maxlength="16" type="text" placeholder="RoomName" class="textbox"/>
+                <!--input id="roomPasswordInput" maxlength="16" type="text" placeholder="RoomPassword" class="textbox" /-->
+                <a href="javascript:void(0)" id="createRoomButton" class="button small bg-green fg-white">CreateRoom</a>
+            </div>
+        </div>
+        <div id="room" class="panel">
+            <div class="panel-header bg-lightBlue fg-white">
+                <span>Users</span>
+            </div>
+            <div class="panel-content">
+                <ul id="userlist">
+                </ul>
+            </div>
+            <video autoplay controls id="remoteCam" style="background-color:#777;width:160px;height:90px;">cannot
+                support HTML5 video element
+            </video>
+            <br/>
+            <a href="javascript:void(0)" id="leaveRoomButton" class="button small bg-grey">LeaveRoom</a>
+        </div>
+    </div>
+
+    <div id="middle" class="panel">
+        <div class="panel-header bg-lightBlue fg-white">
+            <span id="roomNameLabel">#</span>
+        </div>
+        <div class="panel-content">
+            <div id="videos">
+                <video autoplay controls id="remoteScr" style="background-color:#777;width:816px;height:459px;">cannot
+                    support HTML5 video element
+                </video>
+                <video autoplay controls muted id="localScr" style="display:none;">cannot support HTML5 video element
+                </video>
+                <video autoplay controls muted id="localCam" style="display:none;">cannot support HTML5 video element
+                </video>
+            </div>
+            <br/>
+
+            <div id="messages">
+                <legend></legend>
+                <div id="messageList">
+                </div>
+                <input class="span6" id="messageInput" type="text" placeholder="say something..."/>
+                <button class="small bg-green fg-white" id="sendMessageButton">SendMessage</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/adapter.js"></script>
+<script src="/javascripts/static.js"></script>
+<script src="/javascripts/classroom.js"></script>
+</body>
+</html>

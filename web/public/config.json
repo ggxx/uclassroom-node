@@ -1,0 +1,25 @@
+{
+  "TITLE": "uClassroom",
+  "PORT": 1986,
+  "USE_HTTPS": true,
+  "DB_URL": "mongodb://127.0.0.1:27017/uclassroom2",
+  "MAX_USER_NUM_OF_ROOM": 2,
+  "SESSION_KEY": "ggxxsession",
+  "SESSION_SECRET": "ggxxsecret",
+  "GIT": {
+    "HOST": "192.168.0.191",
+    "PORT": 80,
+    "TOKEN": "yzH18DzzyEekAVYkroAe",
+    "TEACHER": {
+      "TOKEN": "GzHEiRsg1aCSApDDZMFZ"
+    }
+  },
+  "DOCKER": {
+    "HOST": "uClassroom",
+    "PORT": 2376,
+    "CA": "/home/ggxx/.docker/ca.pem",
+    "CERT": "/home/ggxx/.docker/cert.pem",
+    "KEY": "/home/ggxx/.docker/key.pem",
+    "NAMESPACE": "uclassroom"
+  }
+}

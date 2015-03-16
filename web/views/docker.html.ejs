@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %> - Docker Management</title>
+    <link rel="stylesheet" href="/stylesheets/normalize.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap.css"/>
+    <link rel="stylesheet" href="/stylesheets/iconFont.css"/>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.widget.min.js"></script>
+    <script src="/javascripts/metro.min.js"></script>
+</head>
+<body class="metro">
+<div class="container">
+    <h2>Docker Management</h2>
+
+    <form>
+        <fieldset>
+            <legend>Docker List</legend>
+            <table class="table striped">
+                <thead>
+                <tr>
+                    <th class="text-left">Name</th>
+                    <th class="text-left">Lab</th>
+                    <th class="text-left">Build Time</th>
+                    <th class="text-left">Operation</th>
+                </tr>
+                </thead>
+                <tbody id="dockers">
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </fieldset>
+    </form>
+    <form>
+        <fieldset>
+            <legend>Create Docker</legend>
+            <div class="input-control text size4" data-role="input-control">
+                <input id="dockerName" name="dockerName" placeholder="DockerName"/>
+            </div>
+            <div class="input-control select size2" data-role="input-control">
+                <select id="dockerLab" name="dockerLab">
+                    <% labs.forEach(function(lab) { %>
+                    <option value="<%= lab._id %>"><%= lab.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <input class="bg-blue fg-white button" type="button" value="CreateDocker" id="buildDocker">
+            </input>
+            <span><%= message %></span>
+        </fieldset>
+    </form>
+    <br/>
+    <div id="webterm" class="panel" data-role="panel">
+        <div class="panel-header bg-lightBlue fg-white">
+            Your web terminal account information
+        </div>
+        <div class="panel-content">
+            <p>Login Name: <%= ttyjs_name %></p>
+
+            <p>Password: <%= ttyjs_password %></p>
+        </div>
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/static.js"></script>
+<script src="/javascripts/docker.js"></script>
+</body>
+</html>
