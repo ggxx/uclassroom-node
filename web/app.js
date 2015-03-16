@@ -76,7 +76,7 @@ var server = config.USE_HTTPS ? https.createServer(options, app) : http.createSe
 db.connect(config.DB_URL, function () {
     server.listen(config.PORT);
     var io = sio.listen(server);
-    rtc.listen(io, db, null, config);
-    dockerMgr.listen(io, db, null, config);
+    rtc.listen(io, db, config);
+    dockerMgr.listen(io, db, config);
     console.log('[info] '.green + 'start listening on port ' + config.PORT);
 });

@@ -4,7 +4,7 @@ var util = require('./util.js');
 var models = require('./model.js');
 var dockerUtil = require('./docker-tls-api.js');
 
-function _listen(io, db, sessionStore, config) {
+function _listen(io, db, config) {
     var nsp = io.of('/cloud');
     nsp.on('connection', function (socket) {
         console.log('socket on [connection]'.blue);
