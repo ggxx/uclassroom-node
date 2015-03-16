@@ -18,7 +18,8 @@ Parameters:
 ```
 {
   "result":true,
-  "user":{
+  "user":
+  {
     "edx_id":"12345",
     "email":"xxxxx@xxxxx.xxx",
     "git_id":32,
@@ -54,7 +55,8 @@ Parameters:
 ```
 {
   "result":true,
-  "user":{
+  "user":
+  {
     "edx_id":"12345",
     "email":"xxxxx@xxxxx.xxx",
     "git_id":32,
