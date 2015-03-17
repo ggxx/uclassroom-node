@@ -20,7 +20,8 @@
     "CA": "/home/ggxx/.docker/ca.pem",
     "CERT": "/home/ggxx/.docker/cert.pem",
     "KEY": "/home/ggxx/.docker/key.pem",
-    "NAMESPACE": "uclassroom"
+    "NAMESPACE": "uclassroom",
+    "MEMORY": "256m"
   },
   "LAB": {
     "DEFAULT_UCORE": "ucore_lab"

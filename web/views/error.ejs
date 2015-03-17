@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title><%= title %></title>
-		<link rel="stylesheet" href="/stylesheets/normalize.css" />
-		<link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css" />
-		<link rel="stylesheet" href="/stylesheets/metro-bootstrap.css" />
-		<link rel="stylesheet" href="/stylesheets/iconFont.css" />
-		<script src="/javascripts/jquery.min.js"></script>
-		<script src="/javascripts/jquery.widget.min.js"></script>
-		<script src="/javascripts/metro.min.js"></script>
-	</head>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/normalize.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/stylesheets/metro-bootstrap.css"/>
+    <link rel="stylesheet" href="/stylesheets/iconFont.css"/>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.widget.min.js"></script>
+    <script src="/javascripts/metro.min.js"></script>
+</head>
 <body class="metro">
-	<div class="container">
-		<h1><%= message %></h1>
-		<h2><%= error.status %></h2>
-		<pre><%= error.stack %></pre>
-	</div>
+<div class="container">
+    <h1><%= message %></h1>
+
+    <h2><%= error.status %></h2>
+    <pre><%= error.stack %></pre>
+</div>
 </body>
 </html>

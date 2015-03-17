@@ -41,7 +41,7 @@ function _listen(io, db, config) {
                 db.insertDocker(docker, function (result_num) {
                     emitDockers();
                     dockerUtil.buildStudentDocker(config.DOCKER.HOST, config.DOCKER.PORT,
-                        config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY,
+                        config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY, config.DOCKER.MEMORY,
                         docker, user.privateKey, user.publicKey, user.name, user.password, user.email, user.gitToken,
                         config.GIT.HOST, config.GIT.PORT, config.GIT.TEACHER.TOKEN, config.DOCKER.NAMESPACE,
                         function () {

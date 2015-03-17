@@ -16,8 +16,11 @@ var router = express.Router();
 router.get('/rtc', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
-
         if (!util.isEmpty(args.id)) {
+            if (args.id.indexOf('%') == 0) {
+                res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
+                return;
+            }
             db.getUserByEdxId(args.id, function (r_user) {
                 if (!util.isEmpty(r_user)) {
                     res.render('rtc.html.ejs', {title: 'rtc', message: ''});
@@ -48,8 +51,11 @@ router.get('/rtc', function (req, res) {
 router.get('/docker', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
-
         if (!util.isEmpty(args.id)) {
+            if (args.id.indexOf('%') == 0) {
+                res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
+                return;
+            }
             db.getUserByEdxId(args.id, function (r_user) {
                 if (!util.isEmpty(r_user)) {
                     db.getReadyLabs(function (r_labs) {
@@ -124,7 +130,7 @@ router.post('/labs', function (req, res) {
             db.upsertLabByName(lab, function (result) {
                 //build docker (step2)
                 dockerApi.buildLabDocker(config.DOCKER.HOST, config.DOCKER.PORT,
-                    config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY,
+                    config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY, config.DOCKER.MEMORY,
                     config.DOCKER.NAMESPACE, lab.name, lab.dockerFile,
                     function (msg) {
                         db.getLabByName(lab.name, function (result_lab) {

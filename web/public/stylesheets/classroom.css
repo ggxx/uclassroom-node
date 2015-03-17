@@ -1,15 +1,27 @@
-#left {
-	float: left;
-	width: 300px;
+div.uc_top {
 }
-#middle {
-	margin-left: 305px;
+
+div.uc_main {
 }
+
+div.uc_bottom {
+}
+
+div.uc_left {
+    float: left;
+    width: 180px;
+}
+
+div.uc_center {
+    margin-left: 180px;
+}
+
 #messages {
-	height: 200px; 
+    height: 200px;
 }
+
 #messageList {
-	height: 160px;
-	overflow: auto;
-	border: solid 1px #eee;
+    height: 160px;
+    overflow: auto;
+    border: solid 1px #eee;
 }

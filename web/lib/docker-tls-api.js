@@ -8,7 +8,7 @@ var util = require('./util.js');
 
 var tmp_path = '/tmp/uclassroom/';
 
-function _buildLabDocker(host, port, ca, cert, key, docker_namespace, lab_name, docker_file_text, callback) {
+function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace, lab_name, docker_file_text, callback) {
     console.info('_buildLabDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
@@ -22,7 +22,7 @@ function _buildLabDocker(host, port, ca, cert, key, docker_namespace, lab_name, 
             ' docker --tlsverify ' +
             ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
             ' -H=tcp://' + host + ':' + port +
-            ' build --rm -t ' + docker_namespace + '/' + lab_name + ' .';
+            ' build --rm -m ' + mem_limit + ' -t ' + docker_namespace + '/' + lab_name + ' .';
         console.info('[exec] '.yellow + cmd.yellow);
         process.exec(cmd, function (error, stdout, stderr) {
             if (error !== null) {
@@ -36,7 +36,7 @@ function _buildLabDocker(host, port, ca, cert, key, docker_namespace, lab_name, 
     });
 }
 
-function _buildStudentDocker(host, port, ca, cert, key, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
+function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
     console.info('_buildStudentDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
@@ -57,7 +57,7 @@ function _buildStudentDocker(host, port, ca, cert, key, docker, private_key, pub
                         ' docker --tlsverify ' +
                         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                         ' -H=tcp://' + host + ':' + port +
-                        ' build --rm -t ' + user_name + '/' + docker.name + ' .';
+                        ' build --rm -m ' + mem_limit + ' -t ' + user_name + '/' + docker.name + ' .';
                     console.info('[exec] '.yellow + cmd.yellow);
                     process.exec(cmd, function (error, stdout, stderr) {
                         if (error !== null) {

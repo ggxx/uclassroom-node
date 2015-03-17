@@ -78,7 +78,7 @@ function _createGitLabAccount(edxid, username, email, callback) {
                                                     docker.status = 'building';
                                                     db.insertDocker(docker, function (result_num) {
                                                         dockerApi.buildStudentDocker(config.DOCKER.HOST, config.DOCKER.PORT,
-                                                            config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY,
+                                                            config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY, config.DOCKER.MEMORY,
                                                             docker, user.privateKey, user.publicKey,
                                                             user.name, user.password, user.email, user.gitToken,
                                                             config.GIT.HOST, config.GIT.PORT,

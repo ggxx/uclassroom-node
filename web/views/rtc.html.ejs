@@ -13,10 +13,10 @@
 </head>
 <body class="metro">
 <div class="container">
-    <div id="left">
+    <div class="uc_top">
         <div id="setting" class="panel" data-role="panel">
             <div class="panel-header bg-lightBlue fg-white">
-                Local Setting
+                Room and Setting
             </div>
             <div class="panel-content">
                 <legend>Camera(W*H)</legend>
@@ -30,43 +30,31 @@
                 <input id="scrHeightInput" min="1" max="1080" type="number" value="1080"/>
                 <a href="javascript:void(0)" id="shareScreenButton"
                    class="button small bg-green fg-white">ShareScreen</a>
-            </div>
-        </div>
-        <div id="rooms" class="panel" data-role="panel">
-            <div class="panel-header bg-lightBlue fg-white">
-                Rooms
-            </div>
-            <div class="panel-content">
+                <br/>
+                <br/>
+                <legend>Rooms</legend>
                 <ul id="roomlist">
                 </ul>
                 <input id="roomNameInput" maxlength="16" type="text" placeholder="RoomName" class="textbox"/>
                 <!--input id="roomPasswordInput" maxlength="16" type="text" placeholder="RoomPassword" class="textbox" /-->
                 <a href="javascript:void(0)" id="createRoomButton" class="button small bg-green fg-white">CreateRoom</a>
-            </div>
-        </div>
-        <div id="room" class="panel">
-            <div class="panel-header bg-lightBlue fg-white">
-                <span>Users</span>
-            </div>
-            <div class="panel-content">
+                <a href="javascript:void(0)" id="leaveRoomButton" class="button small bg-grey">LeaveRoom</a>
+                <br/>
+                <br/>
+                <legend>Users</legend>
                 <ul id="userlist">
                 </ul>
             </div>
-            <video autoplay controls id="remoteCam" style="background-color:#777;width:160px;height:90px;">cannot
-                support HTML5 video element
-            </video>
-            <br/>
-            <a href="javascript:void(0)" id="leaveRoomButton" class="button small bg-grey">LeaveRoom</a>
         </div>
     </div>
 
-    <div id="middle" class="panel">
+    <div class="panel uc_main">
         <div class="panel-header bg-lightBlue fg-white">
             <span id="roomNameLabel">#</span>
         </div>
         <div class="panel-content">
             <div id="videos">
-                <video autoplay controls id="remoteScr" style="background-color:#777;width:816px;height:459px;">cannot
+                <video autoplay controls id="remoteScr" style="background-color:#777;width:800px;height:450px;">cannot
                     support HTML5 video element
                 </video>
                 <video autoplay controls muted id="localScr" style="display:none;">cannot support HTML5 video element
@@ -74,15 +62,20 @@
                 <video autoplay controls muted id="localCam" style="display:none;">cannot support HTML5 video element
                 </video>
             </div>
-            <br/>
+        </div>
+    </div>
 
-            <div id="messages">
-                <legend></legend>
-                <div id="messageList">
-                </div>
-                <input class="span6" id="messageInput" type="text" placeholder="say something..."/>
-                <button class="small bg-green fg-white" id="sendMessageButton">SendMessage</button>
+    <div class="uc_bottom">
+        <div class="uc_left">
+            <video autoplay controls id="remoteCam" style="background-color:#777;width:160px;height:90px;">cannot
+                support HTML5 video element
+            </video>
+        </div>
+        <div id="messages" class="uc_center">
+            <div id="messageList">
             </div>
+            <input class="span6" id="messageInput" type="text" placeholder="say something..."/>
+            <button class="small bg-green fg-white" id="sendMessageButton">SendMessage</button>
         </div>
     </div>
 </div>
