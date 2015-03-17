@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var express = require('express');
 var url = require('url');
@@ -6,6 +8,7 @@ var git = require('../lib/git.js');
 var db = require('../lib/db.js');
 var models = require('../lib/model.js');
 var dockerApi = require('../lib/docker-tls-api.js');
+var api = require('../lib/api.js');
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var router = express.Router();
 
@@ -19,21 +22,24 @@ router.get('/rtc', function (req, res) {
                 if (!util.isEmpty(r_user)) {
                     res.render('rtc.html.ejs', {title: 'rtc', message: ''});
                     return;
+                } else {
+                    api.createGitLabAccount(args.id, args.username, args.email, function (result) {
+                        if (result.result == true) {
+                            res.render('rtc.html.ejs', {title: 'rtc', message: ''});
+                            return;
+                        } else {
+                            res.render('message.html.ejs', {title: 'rtc', message: result.message});
+                            return;
+                        }
+                    });
                 }
             });
+        } else {
+            res.render('message.html.ejs', {title: 'rtc', message: 'id cannot be empty'});
+            return;
         }
-
-        api.createGitLabAccount(args.id, args.username, args.email, function (result) {
-            if (result.result == true) {
-                res.render('rtc.html.ejs', {title: 'rtc', message: ''});
-                return;
-            } else {
-                res.render('message.html.ejs', {title: 'rtc', message: result.message});
-                return;
-            }
-        });
-    }
-    catch (ex) {
+    } catch (ex) {
+        console.log(ex);
         res.render('message.html.ejs', {title: 'rtc', message: 'internal error'});
         return;
     }
@@ -50,31 +56,34 @@ router.get('/docker', function (req, res) {
                         res.render('docker.html.ejs', {
                             title: 'docker', labs: r_labs,
                             ttyjs_name: r_user.name, ttyjs_password: r_user.password,
-                            message: ''
+                            enable_create: false, message: ''
                         });
                         return;
                     });
+                } else {
+                    api.createGitLabAccount(args.id, args.username, args.email, function (result) {
+                        if (result.result == true) {
+                            db.getReadyLabs(function (r_labs) {
+                                res.render('docker.html.ejs', {
+                                    title: 'docker', labs: r_labs,
+                                    ttyjs_name: result.user.name, ttyjs_password: result.user.password,
+                                    enable_create: false, message: ''
+                                });
+                                return;
+                            });
+                        } else {
+                            res.render('message.html.ejs', {title: 'docker', message: result.message});
+                            return;
+                        }
+                    });
                 }
             });
+        } else {
+            res.render('message.html.ejs', {title: 'docker', message: 'id cannot be empty'});
+            return;
         }
-
-        api.createGitLabAccount(args.id, args.username, args.email, function (result) {
-            if (result.result == true) {
-                db.getReadyLabs(function (r_labs) {
-                    res.render('docker.html.ejs', {
-                        title: 'docker', labs: r_labs,
-                        ttyjs_name: result.user.name, ttyjs_password: result.user.password,
-                        message: ''
-                    });
-                    return;
-                });
-            } else {
-                res.render('message.html.ejs', {title: 'docker', message: result.message});
-                return;
-            }
-        });
-    }
-    catch (ex) {
+    } catch (ex) {
+        console.log(ex);
         res.render('message.html.ejs', {title: 'docker', message: 'internal error'});
         return;
     }
@@ -121,15 +130,16 @@ router.post('/labs', function (req, res) {
                         db.getLabByName(lab.name, function (result_lab) {
                             result_lab.status = 'ready';
                             db.updateLab(result_lab, function (result2) {
-                                db.getReadyLabs(function (r_labs) {
-                                    res.render('docker.html.ejs', {
-                                        title: 'docker',
-                                        labs: r_labs,
-                                        ttyjs_name: result_user.name,
-                                        ttyjs_password: result_user.password,
-                                        message: 'ok'
+                                db.getLabs(function (result_labs) {
+                                    git.getUserProjects(config.GIT.HOST, config.GIT.PORT, config.GIT.TEACHER.TOKEN, function (result_projects) {
+                                        res.render('labs.html.ejs', {
+                                            title: 'labs',
+                                            username: '',
+                                            labs: result_labs,
+                                            projects: result_projects,
+                                            message: ''
+                                        });
                                     });
-                                    return;
                                 });
                             });
                         });

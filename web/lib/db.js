@@ -1,3 +1,5 @@
+'use strict';
+
 var mongodb = require('mongodb');
 var util = require('../lib/util.js');
 var db;
@@ -202,13 +204,6 @@ function _findDocker(dockerid, callback) {
         callback(result);
     });
 }
-function _getDockerByGuid(guid, callback) {
-    console.log('_getDockerByUrl'.cyan);
-    db.collection(DOCKER_COLLECTION).findOne({'guid': guid}, function (err, result) {
-        if (err) throw err;
-        callback(result);
-    });
-}
 function _getUserDockerByName(username, dockername, callback) {
     console.log('_getDockerByUrl'.cyan);
     db.collection(DOCKER_COLLECTION).findOne({'builder.name': username, 'name': dockername}, function (err, result) {
@@ -359,7 +354,6 @@ exports.updateRoom = _updateRoom;
 exports.insertMessage = _insertMessage;
 exports.insertDocker = _insertDocker;
 exports.findDocker = _findDocker;
-exports.getDockerByGuid = _getDockerByGuid;
 exports.getUserDockers = _getUserDockers;
 exports.getUserDockerByName = _getUserDockerByName;
 exports.updateDocker = _updateDocker;

@@ -1,3 +1,5 @@
+'use strict';
+
 var process = require('child_process');
 var colors = require('colors');
 var fs = require('fs');
@@ -130,7 +132,7 @@ function _stopStudentDocker(host, port, ca, cert, key, docker, callback) {
 }
 
 function _createStudentDockerfile(docker, private_key, public_key, user_name, user_pwd, user_email, git_host, git_port, docker_namespace, teacher_name) {
-    dockerfile =
+    var dockerfile =
         '# ' + docker.name +
         '\n#' +
         '\n# VERSION    0.0.1' +

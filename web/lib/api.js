@@ -1,8 +1,11 @@
+'use strict';
+
 var fs = require('fs');
 var util = require('./util.js');
 var db = require('./db.js');
 var models = require('./model.js');
 var git = require('./git.js');
+var dockerApi = require('./docker-tls-api.js');
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
 
 
@@ -65,8 +68,35 @@ function _createGitLabAccount(edxid, username, email, callback) {
                                         git.addSSHKey(config.GIT.HOST, config.GIT.PORT, config.GIT.TOKEN, user.gitId, 'default ssh key', user.publicKey, function () {
                                             // Add new user
                                             db.insertUser(user, function (r) {
-                                                db.getUserByName(user.name, function (r_user) {
-                                                    callback({result: true, user: r_user});
+                                                // build docker
+                                                db.getLabByName(config.LAB.DEFAULT_UCORE, function (result_lab) {
+                                                    var docker = new models.Docker();
+                                                    docker.name = config.LAB.DEFAULT_UCORE;
+                                                    docker.lab = result_lab;
+                                                    docker.builder = user;
+                                                    docker.startBuildTime = new Date();
+                                                    docker.status = 'building';
+                                                    db.insertDocker(docker, function (result_num) {
+                                                        dockerApi.buildStudentDocker(config.DOCKER.HOST, config.DOCKER.PORT,
+                                                            config.DOCKER.CA, config.DOCKER.CERT, config.DOCKER.KEY,
+                                                            docker, user.privateKey, user.publicKey,
+                                                            user.name, user.password, user.email, user.gitToken,
+                                                            config.GIT.HOST, config.GIT.PORT,
+                                                            config.GIT.TEACHER.TOKEN, config.DOCKER.NAMESPACE,
+                                                            function () {
+                                                                db.getUserDockerByName(user.name, docker.name, function (result_docker) {
+                                                                    result_docker.contId = docker.contId;
+                                                                    result_docker.buildTime = new Date();
+                                                                    result_docker.status = 'ready';
+                                                                    db.updateDocker(result_docker, function (result_num) {
+                                                                        db.getUserByName(user.name, function (r_user) {
+                                                                            callback({result: true, user: r_user});
+                                                                            return;
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                    });
                                                 });
                                             });
                                         });
@@ -74,8 +104,7 @@ function _createGitLabAccount(edxid, username, email, callback) {
                                 });
                             }
                         });
-                    }
-                    else {
+                    } else {
                         callback({result: false, message: err});
                         return;
                     }

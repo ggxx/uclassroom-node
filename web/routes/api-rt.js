@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var util = require('../lib/util.js');
 var db = require('../lib/db.js');

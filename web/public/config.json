@@ -21,5 +21,8 @@
     "CERT": "/home/ggxx/.docker/cert.pem",
     "KEY": "/home/ggxx/.docker/key.pem",
     "NAMESPACE": "uclassroom"
+  },
+  "LAB": {
+    "DEFAULT_UCORE": "ucore_lab"
   }
 }

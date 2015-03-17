@@ -1,3 +1,5 @@
+'use strict';
+
 var colors = require('colors');
 var cookieParser = require('cookie-parser');
 var util = require('./util.js');
