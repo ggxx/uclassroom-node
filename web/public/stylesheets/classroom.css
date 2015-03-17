@@ -16,6 +16,11 @@ div.uc_center {
     margin-left: 180px;
 }
 
+div.uc_video {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #messages {
     height: 200px;
 }
