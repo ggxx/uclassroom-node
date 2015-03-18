@@ -22,7 +22,7 @@ function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace,
             ' docker --tlsverify ' +
             ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
             ' -H=tcp://' + host + ':' + port +
-            ' build --rm -m ' + mem_limit + ' -t ' + docker_namespace + '/' + lab_name + ' .';
+            ' build --rm -t ' + docker_namespace + '/' + lab_name + ' .';
         console.info('[exec] '.yellow + cmd.yellow);
         process.exec(cmd, function (error, stdout, stderr) {
             if (error !== null) {
@@ -57,7 +57,7 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                         ' docker --tlsverify ' +
                         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                         ' -H=tcp://' + host + ':' + port +
-                        ' build --rm -m ' + mem_limit + ' -t ' + user_name + '/' + docker.name + ' .';
+                        ' build --rm -t ' + user_name + '/' + docker.name + ' .';
                     console.info('[exec] '.yellow + cmd.yellow);
                     process.exec(cmd, function (error, stdout, stderr) {
                         if (error !== null) {
