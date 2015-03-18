@@ -17,7 +17,7 @@ router.get('/rtc', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
         if (!util.isEmpty(args.id)) {
-            if (args.id.indexOf('%') == 0) {
+            if (args.id.indexOf('%') == 0 || args.id == 'student') {
                 res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
                 return;
             }
@@ -52,7 +52,7 @@ router.get('/docker', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
         if (!util.isEmpty(args.id)) {
-            if (args.id.indexOf('%') == 0) {
+            if (args.id.indexOf('%') == 0 || args.id == 'student') {
                 res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
                 return;
             }
