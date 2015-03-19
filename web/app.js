@@ -22,8 +22,8 @@ var api = require('./routes/api-rt.js');
 
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var options = {
-    key: fs.readFileSync('./tls/agent-test-key.pem'),
-    cert: fs.readFileSync('./tls/agent-test-cert.pem')
+    key: fs.readFileSync(config.TLS_KEY),
+    cert: fs.readFileSync(config.TLS_CERT)
 };
 
 

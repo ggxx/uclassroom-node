@@ -13,6 +13,10 @@ var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var router = express.Router();
 
 
+router.get('/', function (req, res) {
+    res.render('message.html.ejs', {title: 'uClassroom', message: 'everything is ok'});
+});
+
 router.get('/rtc', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
@@ -53,7 +57,7 @@ router.get('/docker', function (req, res) {
         var args = url.parse(req.url, true).query;
         if (!util.isEmpty(args.id)) {
             if (args.id.indexOf('%') == 0 || args.id == 'student') {
-                res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
+                res.render('message.html.ejs', {title: 'docker', message: 'cannot preview this page in studio'});
                 return;
             }
             db.getUserByEdxId(args.id, function (r_user) {
