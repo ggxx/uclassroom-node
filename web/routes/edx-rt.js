@@ -160,5 +160,11 @@ router.post('/labs', function (req, res) {
     });
 });
 
+router.get('/help', function (req, res) {
+    res.render('help.html.ejs', {
+        title: 'help'
+    });
+});
+
 
 module.exports = router;

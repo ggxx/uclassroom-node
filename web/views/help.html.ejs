@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title><%= title %></title>
+	    <link rel="stylesheet" href="/stylesheets/normalize.css" />
+	    <link rel="stylesheet" href="/stylesheets/metro-bootstrap-responsive.css" />
+	    <link rel="stylesheet" href="/stylesheets/metro-bootstrap.css" />
+	    <link rel="stylesheet" href="/stylesheets/iconFont.css" />
+	    <script src="/javascripts/jquery.min.js"></script>
+	    <script src="/javascripts/jquery.widget.min.js"></script>
+	    <script src="/javascripts/metro.min.js"></script>
+    </head>
+    <body class="metro">
+	    <div class="container">
+		    <h2>Readme</h2>
+		    <div class="panel">
+			    <div class="panel-header bg-lightBlue fg-white">
+				    如何创建在线实验环境
+			    </div>
+			    <div class="panel-content">
+				    <ul>
+					    <li>使用支持HTML5的浏览器登录<a href="https://www.xuetangx.com/" target="_blank">学堂在线</a>，进入清华大学<a href="https://www.xuetangx.com/courses/TsinghuaX/30240243X/2015_T1/info" target="_blank">操作系统</a>课程页面</li>
+					    <li>在导航栏依次选择：课件 - 课程工具 - 在线实验平台 - Web实验平台</li>
+                        <li>如果你是第一次访问Web实验平台或实时交流平台，请耐心等待一分钟左右，后台系统正在为你分配资源:-)</li>
+					    <li>页面加载完成后，可以在Docker List表格中，看到你的在线虚拟实验环境：ucore_lab</li>
+					    <li>点击start按钮启动实验环境，等待几秒钟，此时出现stop和web terminal按钮</li>
+					    <li>点击stop按钮可以关闭实验环境，下次重新启动时，你的数据不会丢失</li>
+					    <li>点击Web Terminal按钮可以打开一个新网页，网页要求你输入用户名和口令，可以在Docker List页面的Your web terminal account information中找到</li>
+					    <li>在新网页的右上角点击Open Terminal会启动一个命令行的字符界面（虚拟终端），这就是一个最基本的在线实验环境，环境中默认安装了fedora 20操作系统以及编译调试ucore的基本工具</li>
+					    <li>在虚拟终端的/ucore_lab路径中可以找到ucore_lab的所有实验代码，可以用vi、vim、emacs、nano等工具编辑实验代码</li>
+					    <li>当完成实验代码后，可以直接使用git commit和git push将代码提交到我们的git服务器上（不需要对git做任何配置）</li>
+				    </ul>
+			    </div>
+		    </div>
+		    <div class="panel">
+			    <div class="panel-header bg-lightBlue fg-white">
+				    如何与助教或同学建立视频会话
+			    </div>
+			    <div class="panel-content">
+				    <ul>
+				        <li>使用Chrome、Firefox或者Opera浏览器登录<a href="https://www.xuetangx.com/" target="_blank">学堂在线</a>，进入清华大学<a href="https://www.xuetangx.com/courses/TsinghuaX/30240243X/2015_T1/info" target="_blank">操作系统</a>课程页面</li>
+					    <li>在导航栏依次选择：课件 - 课程工具 - 在线实验平台 - 实时交流平台</li>
+					    <li>如果你是第一次访问Web实验平台或实时交流平台，请耐心等待一分钟左右，后台系统正在为你分配资源:-)</li>
+					    <li>页面加载完成后，可以在Rooms and Settings中，设置你要共享的摄像头与桌面分辨率</li>
+					    <li>如果你要加入别人的房间，在Rooms列表中选择点击房间名称即可；如果你要创建房间，请在RoomName文本框中输入房间名称，点击CreateRoom按钮</li>
+					    <li>填写本地摄像头的分辨率，然后点击ShareCamera按钮，就可以将本地摄像头与麦克风共享给对方</li>
+					    <li>填写桌面的分辨率，然后点击ShareScreen按钮，就可以将本地桌面共享给对方，请注意
+						    <ul>
+							    <li>桌面共享指的是接收方能够看到桌面提供方屏幕中实时的画面，不能进行远程操作</li>
+							    <li>
+								    目前仅有Chrome浏览器支持桌面共享，即提供桌面共享的用户必须使用Chrome，而且需要在启动浏览器时添加参数
+								    <p class="code-text">--enable-usermedia-screen-capturing</p>
+								    或者通过安装Chrome Extension的方式开启桌面共享，后续我们会提供该Extension
+							    </li>
+							    <li>接收桌面共享的用户不限定必须使用Chrome</li>
+						    </ul>
+					    </li>
+					    <li>进入房间后，可以在用户列表中看到房间内的所有用户，目前由于资源有限，我们在一个房间中仅支持2个用户进入</li>
+					    <li>如果房间里的用户开启了音视频或桌面共享，则其用户名右侧会有一个点亮的图标提示，点击该图标就可以接收到对方共享的实时音视频或桌面</li>
+					    <li>在页面下方的文本框中输入文字，按回车键或者点击SendMessage，可以将文字发送给房间内的所有人</li>
+				    </ul>
+			    </div>
+		    </div>
+	    </div>
+    </body>
+</html>
