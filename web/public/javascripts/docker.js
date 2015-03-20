@@ -11,7 +11,7 @@ socket.on('connect', function () {
 
     var args = new Object();
     args = GetUrlParms();
-    socket.emit('bind', args['id']);
+    socket.emit('bind', args['edxid']);
 });
 
 socket.on('dockers', function (dockers) {

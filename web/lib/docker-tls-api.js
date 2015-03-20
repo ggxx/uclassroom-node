@@ -1,3 +1,5 @@
+'use strict';
+
 var process = require('child_process');
 var colors = require('colors');
 var fs = require('fs');
@@ -6,7 +8,7 @@ var util = require('./util.js');
 
 var tmp_path = '/tmp/uclassroom/';
 
-function _buildLabDocker(host, port, ca, cert, key, docker_namespace, lab_name, docker_file_text, callback) {
+function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace, lab_name, docker_file_text, callback) {
     console.info('_buildLabDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
@@ -34,7 +36,7 @@ function _buildLabDocker(host, port, ca, cert, key, docker_namespace, lab_name, 
     });
 }
 
-function _buildStudentDocker(host, port, ca, cert, key, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
+function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
     console.info('_buildStudentDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
@@ -130,7 +132,7 @@ function _stopStudentDocker(host, port, ca, cert, key, docker, callback) {
 }
 
 function _createStudentDockerfile(docker, private_key, public_key, user_name, user_pwd, user_email, git_host, git_port, docker_namespace, teacher_name) {
-    dockerfile =
+    var dockerfile =
         '# ' + docker.name +
         '\n#' +
         '\n# VERSION    0.0.1' +

@@ -2,24 +2,30 @@
   "TITLE": "uClassroom",
   "PORT": 1986,
   "USE_HTTPS": true,
-  "DB_URL": "mongodb://127.0.0.1:27017/uclassroom2",
+  "DB_URL": "mongodb://127.0.0.1:27017/uclassroom",
   "MAX_USER_NUM_OF_ROOM": 2,
   "SESSION_KEY": "ggxxsession",
   "SESSION_SECRET": "ggxxsecret",
+  "TLS_KEY": "./tls/agent-test-key.pem",
+  "TLS_CERT": "./tls/agent-test-cert.pem",
   "GIT": {
-    "HOST": "192.168.0.191",
+    "HOST": "your.gitlab.domain",
     "PORT": 80,
-    "TOKEN": "yzH18DzzyEekAVYkroAe",
+    "TOKEN": "git-root-token",
     "TEACHER": {
-      "TOKEN": "GzHEiRsg1aCSApDDZMFZ"
+      "TOKEN": "git-teacher-token"
     }
   },
   "DOCKER": {
-    "HOST": "uClassroom",
+    "HOST": "your.docker.domain",
     "PORT": 2376,
     "CA": "/home/ggxx/.docker/ca.pem",
     "CERT": "/home/ggxx/.docker/cert.pem",
     "KEY": "/home/ggxx/.docker/key.pem",
-    "NAMESPACE": "uclassroom"
+    "NAMESPACE": "uclassroom",
+    "MEMORY": "256m"
+  },
+  "LAB": {
+    "DEFAULT_UCORE": "ucore_lab"
   }
 }

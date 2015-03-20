@@ -73,7 +73,7 @@ socket.on('connect', function () {
 
     var args = new Object();
     args = GetUrlParms();
-    socket.emit('bind', args['id']);
+    socket.emit('bind', args['edxid']);
 });
 socket.on('not_login', function () {
     console.log('socket on not_login');

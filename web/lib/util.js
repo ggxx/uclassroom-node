@@ -1,3 +1,5 @@
+'use strict';
+
 var crypto = require('crypto');
 var process = require('child_process');
 var colors = require('colors');

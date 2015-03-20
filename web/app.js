@@ -1,3 +1,5 @@
+'use strict';
+
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var express = require('express');
@@ -16,11 +18,12 @@ var rtc = require('./lib/rtc.js');
 var dockerMgr = require('./lib/docker-mgr.js');
 
 var edx = require('./routes/edx-rt.js');
+var api = require('./routes/api-rt.js');
 
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var options = {
-    key: fs.readFileSync('./tls/agent-test-key.pem'),
-    cert: fs.readFileSync('./tls/agent-test-cert.pem')
+    key: fs.readFileSync(config.TLS_KEY),
+    cert: fs.readFileSync(config.TLS_CERT)
 };
 
 
@@ -34,6 +37,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', edx);
+app.use('/api/', api);
 
 
 // catch 404 and forward to error handler

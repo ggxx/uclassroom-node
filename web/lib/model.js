@@ -1,3 +1,5 @@
+'use strict';
+
 function _user() {
 }
 _user.prototype = {
