@@ -15,6 +15,11 @@ function _createGitLabAccount(edxid, username, email, callback) {
         return;
     }
 
+    if (edxid.length != 32) {
+        callback({result: false, message: 'invalid edx id'});
+        return;
+    }
+
     db.getUserByEdxId(edxid, function (r_user) {
         if (!util.isEmpty(r_user)) {
             callback({result: false, message: 'edx id has been registered'});
