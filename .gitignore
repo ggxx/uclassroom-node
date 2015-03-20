@@ -2,9 +2,9 @@
 *~
 
 
-### Custom bak files
+### Custom files
 *.bak
-
+web/tls
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

@@ -12,10 +12,6 @@ router.get('/', function (req, res) {
     res.send({"result": true, "message": "I'm working!"});
 });
 
-router.get('/users', function (req, res) {
-    res.send({"result": true, "message": "I'm working!"});
-});
-
 // Get user by id.
 router.get('/users/:edxid', function (req, res) {
     var edxid = req.params.edxid;

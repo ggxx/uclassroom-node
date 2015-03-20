@@ -20,17 +20,17 @@ router.get('/', function (req, res) {
 router.get('/rtc', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
-        if (!util.isEmpty(args.id)) {
-            if (args.id.indexOf('%') == 0 || args.id == 'student') {
+        if (!util.isEmpty(args.edxid)) {
+            if (args.edxid.indexOf('%') == 0 || args.edxid == 'student') {
                 res.render('message.html.ejs', {title: 'rtc', message: 'cannot preview this page in studio'});
                 return;
             }
-            db.getUserByEdxId(args.id, function (r_user) {
+            db.getUserByEdxId(args.edxid, function (r_user) {
                 if (!util.isEmpty(r_user)) {
                     res.render('rtc.html.ejs', {title: 'rtc', message: ''});
                     return;
                 } else {
-                    api.createGitLabAccount(args.id, args.username, args.email, function (result) {
+                    api.createGitLabAccount(args.edxid, args.username, args.email, function (result) {
                         if (result.result == true) {
                             res.render('rtc.html.ejs', {title: 'rtc', message: ''});
                             return;
@@ -55,12 +55,12 @@ router.get('/rtc', function (req, res) {
 router.get('/docker', function (req, res) {
     try {
         var args = url.parse(req.url, true).query;
-        if (!util.isEmpty(args.id)) {
-            if (args.id.indexOf('%') == 0 || args.id == 'student') {
+        if (!util.isEmpty(args.edxid)) {
+            if (args.edxid.indexOf('%') == 0 || args.edxid == 'student') {
                 res.render('message.html.ejs', {title: 'docker', message: 'cannot preview this page in studio'});
                 return;
             }
-            db.getUserByEdxId(args.id, function (r_user) {
+            db.getUserByEdxId(args.edxid, function (r_user) {
                 if (!util.isEmpty(r_user)) {
                     db.getReadyLabs(function (r_labs) {
                         res.render('docker.html.ejs', {
@@ -71,7 +71,7 @@ router.get('/docker', function (req, res) {
                         return;
                     });
                 } else {
-                    api.createGitLabAccount(args.id, args.username, args.email, function (result) {
+                    api.createGitLabAccount(args.edxid, args.username, args.email, function (result) {
                         if (result.result == true) {
                             db.getReadyLabs(function (r_labs) {
                                 res.render('docker.html.ejs', {
