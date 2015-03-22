@@ -15,6 +15,10 @@ function _listen(io, db, config) {
         socket.on('bind', function (edxid) {
             console.log('bind');
             db.getUserByEdxId(edxid, function (result_user) {
+                if (util.isEmpty(result_user)) {
+                    socket.emit('error', 'cannot find edx id');
+                    return;
+                }
                 user = result_user;
                 emitDockers();
             });
@@ -27,11 +31,17 @@ function _listen(io, db, config) {
 
         socket.on('build_docker', function (message) {
             console.log('build_docker');
+            // message.dockerLab: docker._id
+            // message.dockerName: docker.name
             if (util.isEmpty(message.dockerLab) || util.isEmpty(message.dockerName) || (message.dockerLab.length != 12 && message.dockerLab.length != 24)) {
-                socket.emit('build_docker');
+                socket.emit('error', 'build docker failed, invalid parameters');
                 return;
             }
             db.findLab(message.dockerLab, function (result_lab) {
+                if (util.isEmpty(result_lab)) {
+                    socket.emit('error', 'build docker failed, parameters error');
+                    return;
+                }
                 var docker = new models.Docker();
                 docker.name = message.dockerName;
                 docker.lab = result_lab;
@@ -61,6 +71,10 @@ function _listen(io, db, config) {
         socket.on('start_docker', function (dockerid) {
             console.log('start_docker');
             db.findDocker(dockerid, function (result_docker) {
+                if (util.isEmpty(result_docker)) {
+                    socket.emit('error', 'cannot find docker, parameters error');
+                    return;
+                }
                 result_docker.status = 'starting';
                 db.updateDocker(result_docker, function (result_num) {
                     emitDockers();
@@ -79,6 +93,10 @@ function _listen(io, db, config) {
         socket.on('stop_docker', function (dockerid) {
             console.log('stop_docker');
             db.findDocker(dockerid, function (result_docker) {
+                if (util.isEmpty(result_docker)) {
+                    socket.emit('error', 'cannot find docker, parameters error');
+                    return;
+                }
                 result_docker.status = 'stopping';
                 db.updateDocker(result_docker, function (result_num) {
                     emitDockers();

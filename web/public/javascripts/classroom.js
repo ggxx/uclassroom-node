@@ -75,149 +75,148 @@ socket.on('connect', function () {
     args = GetUrlParms();
     socket.emit('bind', args['edxid']);
 });
-socket.on('not_login', function () {
-    console.log('socket on not_login');
-
-    window.navigate('/login');
+socket.on('error', function (text) {
+    console.log('socket on error');
+    showNotify(text);
 });
 socket.on('bind', function (session_user) {
     console.log('bind userid:' + session_user._id);
 
+    socket.on('rooms', function (rooms) {
+        console.log('socket on rooms');
+
+        refreshRoomListDOM(rooms);
+    });
+    socket.on('create_room', function (message) {
+        console.log('socket on create_room');
+
+        if (message.result) {
+            joinRoom(message.room._id);
+        }
+        else {
+            showNotify(message.text);
+        }
+    });
+    socket.on('join_room', function (message) {
+        console.log('socket on join_room');
+
+        if (message.result) {
+            refreshRoomDOM(message.room);
+        }
+        else {
+            showNotify(message.text);
+        }
+    });
+    socket.on('leave_room', function (message) {
+        console.log('socket on leave_room');
+
+        if (message.result) {
+            refreshRoomDOM(false);
+        }
+        else {
+            showNotify(message.text);
+        }
+    });
+    socket.on('users', function (users) {
+        console.log('socket on users');
+
+        refreshUserListDOM(users);
+    });
+    socket.on('text_message', function (message) {
+        console.log('socket on text_message');
+
+        if (message.result) {
+            refreshMessageListDOM(message.time, message.from, message.text, 'White');
+            messageInput.value = '';
+        }
+        else {
+            refreshMessageListDOM(message.time, 'Cannot send message.', message.text, 'Yellow');
+        }
+    });
+    socket.on('share_cam', function (message) {
+        console.log('socket on [share_cam]');
+        refreshUserDeviceDOM(message.userid, message.username, message.cameraSharing, message.microphoneSharing);
+    });
+    socket.on('share_screen', function (message) {
+        console.log('socket on [share_screen]');
+        refreshUserDeviceDOM(message.userid, message.username, '', '', message.screenSharing);
+    });
+    // call for sharing
+    // offer
+    // answer
+    // streamtype => 1.camera, 2.microphone, 3.cam & mic, 4.screen
+    socket.on('call', function (message) {
+        console.log('socket on [call]');
+
+        if (message.streamtype === 1 || message.streamtype === 2 || message.streamtype === 3) {
+            if (!mediaStream) {
+                console.log('no media stream');
+                return;
+            }
+            rtcPeerConnections[message.answer + '-offer-media'] = buildRtcPeerConnection(message.answer, message.streamtype, true);
+            rtcPeerConnections[message.answer + '-offer-media'].addStream(mediaStream);
+            switch (message.streamtype) {
+                case 1:
+                    rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, videoOnlyOfferConstraints);
+                    break;
+                case 2:
+                    rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, audioOnlyOfferConstraints);
+                    break;
+                case 3:
+                    rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, offerConstraints);
+                    break;
+            }
+        }
+        else if (message.streamtype === 4) {
+            if (!screenStream) {
+                console.log('no screen stream');
+                return;
+            }
+            rtcPeerConnections[message.answer + '-offer-screen'] = buildRtcPeerConnection(message.answer, message.streamtype, true);
+            rtcPeerConnections[message.answer + '-offer-screen'].addStream(screenStream);
+            rtcPeerConnections[message.answer + '-offer-screen'].createOffer(rtcPeerConnections[message.answer + '-offer-screen'].onoffercreated, onError, videoOnlyOfferConstraints);
+        }
+        else {
+            console.log('message.streamtype (' + message.streamtype + ') is wrong');
+        }
+    });
+    // offer
+    // answer
+    // sdp
+    // streamtype
+    socket.on('offer', function (message) {
+        console.log('socket on [offer]');
+        var rtcPeerConnection = getRTCPeerConnection(message.offer, message.streamtype, false);
+        console.log('setRemoteDescription');
+        rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp), rtcPeerConnection.onremotesdpset, onError);
+    });
+    // offer
+    // answer
+    // sdp
+    // streamtype
+    socket.on('answer', function (message) {
+        console.log('socket on [answer]');
+        var rtcPeerConnection = getRTCPeerConnection(message.answer, message.streamtype, true);
+        console.log('setRemoteDescription');
+        rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp));
+    });
+    // from
+    // to
+    // candidate
+    // streamtype
+    // tag
+    socket.on('candidate', function (message) {
+        console.log('socket on [candidate]');
+        var candidate = new RTCIceCandidate({
+            sdpMLineIndex: message.candidate.sdpMLineIndex,
+            candidate: message.candidate.candidate
+        });
+        getRTCPeerConnection(message.from, message.streamtype, !message.tag).addIceCandidate(candidate);
+    });
+
     user = session_user;
     socket.emit('rooms');
 });
-socket.on('rooms', function (rooms) {
-    console.log('socket on rooms');
-
-    refreshRoomListDOM(rooms);
-});
-socket.on('create_room', function (message) {
-    console.log('socket on create_room');
-
-    if (message.result) {
-        joinRoom(message.room._id);
-    }
-    else {
-        alert(message.text);
-    }
-});
-socket.on('join_room', function (message) {
-    console.log('socket on join_room');
-
-    if (message.result) {
-        refreshRoomDOM(message.room);
-    }
-    else {
-        alert(message.text);
-    }
-});
-socket.on('leave_room', function (message) {
-    console.log('socket on leave_room');
-
-    if (message.result) {
-        refreshRoomDOM(false);
-    }
-    else {
-        alert(message.text);
-    }
-});
-socket.on('users', function (users) {
-    console.log('socket on users');
-
-    refreshUserListDOM(users);
-});
-socket.on('text_message', function (message) {
-    console.log('socket on text_message');
-
-    if (message.result) {
-        refreshMessageListDOM(message.time, message.from, message.text, 'White');
-        messageInput.value = '';
-    }
-    else {
-        refreshMessageListDOM(message.time, 'Cannot send message.', message.text, 'Yellow');
-    }
-});
-socket.on('share_cam', function (message) {
-    console.log('socket on [share_cam]');
-    refreshUserDeviceDOM(message.userid, message.username, message.cameraSharing, message.microphoneSharing);
-});
-socket.on('share_screen', function (message) {
-    console.log('socket on [share_screen]');
-    refreshUserDeviceDOM(message.userid, message.username, '', '', message.screenSharing);
-});
-// call for sharing
-// offer 
-// answer
-// streamtype => 1.camera, 2.microphone, 3.cam & mic, 4.screen
-socket.on('call', function (message) {
-    console.log('socket on [call]');
-
-    if (message.streamtype === 1 || message.streamtype === 2 || message.streamtype === 3) {
-        if (!mediaStream) {
-            console.log('no media stream');
-            return;
-        }
-        rtcPeerConnections[message.answer + '-offer-media'] = buildRtcPeerConnection(message.answer, message.streamtype, true);
-        rtcPeerConnections[message.answer + '-offer-media'].addStream(mediaStream);
-        switch (message.streamtype) {
-            case 1:
-                rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, videoOnlyOfferConstraints);
-                break;
-            case 2:
-                rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, audioOnlyOfferConstraints);
-                break;
-            case 3:
-                rtcPeerConnections[message.answer + '-offer-media'].createOffer(rtcPeerConnections[message.answer + '-offer-media'].onoffercreated, onError, offerConstraints);
-                break;
-        }
-    }
-    else if (message.streamtype === 4) {
-        if (!screenStream) {
-            console.log('no screen stream');
-            return;
-        }
-        rtcPeerConnections[message.answer + '-offer-screen'] = buildRtcPeerConnection(message.answer, message.streamtype, true);
-        rtcPeerConnections[message.answer + '-offer-screen'].addStream(screenStream);
-        rtcPeerConnections[message.answer + '-offer-screen'].createOffer(rtcPeerConnections[message.answer + '-offer-screen'].onoffercreated, onError, videoOnlyOfferConstraints);
-    }
-    else {
-        console.log('message.streamtype (' + message.streamtype + ') is wrong');
-    }
-});
-// offer 
-// answer
-// sdp
-// streamtype
-socket.on('offer', function (message) {
-    console.log('socket on [offer]');
-    var rtcPeerConnection = getRTCPeerConnection(message.offer, message.streamtype, false);
-    console.log('setRemoteDescription');
-    rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp), rtcPeerConnection.onremotesdpset, onError);
-});
-// offer 
-// answer
-// sdp
-// streamtype
-socket.on('answer', function (message) {
-    console.log('socket on [answer]');
-    var rtcPeerConnection = getRTCPeerConnection(message.answer, message.streamtype, true);
-    console.log('setRemoteDescription');
-    rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp));
-});
-// from
-// to
-// candidate
-// streamtype
-// tag
-socket.on('candidate', function (message) {
-    console.log('socket on [candidate]');
-    var candidate = new RTCIceCandidate({
-        sdpMLineIndex: message.candidate.sdpMLineIndex,
-        candidate: message.candidate.candidate
-    });
-    getRTCPeerConnection(message.from, message.streamtype, !message.tag).addIceCandidate(candidate);
-});
-
 //--------CLASSROOM--------
 function createRoom() {
     console.log('function [createRoom]');
@@ -329,7 +328,7 @@ function gotCamera(stream) {
 }
 function gotCameraError(error) {
     //console.log('gotCameraError');
-    alert('got Camera Error');
+    showNotify('got Camera Error');
     stopSharingCamera();
 }
 function gotScreen(stream) {
@@ -347,7 +346,7 @@ function gotScreen(stream) {
 }
 function gotScreenError(error) {
     //console.log('gotScreenError');
-    alert('gotScreenError');
+    showNotify('gotScreenError');
     stopSharingScreen();
 }
 function stopSharingCamera() {
@@ -628,4 +627,15 @@ function refreshUserDeviceDOM(id, name, cam, mic, scr) {
     else {
         // do nothing
     }
+}
+
+function showNotify(text) {
+    $.Notify({
+        shadow: true,
+        timeout: 6000,
+        style: {background: 'red', color: 'white'},
+        position: 'bottom-right',
+        caption: 'Information',
+        content: text
+    });
 }

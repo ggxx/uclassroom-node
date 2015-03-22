@@ -22,8 +22,6 @@ function _connect(url, callback) {
 function _validateUser(user, callback) {
     console.log('_validateUser'.cyan);
 
-    //TODO: more more check
-
     if (user.name.length > 30 || user.name.length < 4) {
         callback('The length of name must between 4 and 30!');
         return;

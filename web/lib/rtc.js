@@ -14,6 +14,10 @@ function _listen(io, db, config) {
         socket.on('bind', function (edxid) {
             // Bind user id and socket id
             db.getUserByEdxId(edxid, function (result_user) {
+                if (util.isEmpty(result_user)) {
+                    socket.emit('error', 'cannot find edx id');
+                    return;
+                }
                 user = result_user;
                 user.classroom = {};
                 user.cameraSharing = false;

@@ -13,7 +13,10 @@ socket.on('connect', function () {
     args = GetUrlParms();
     socket.emit('bind', args['edxid']);
 });
-
+socket.on('error', function (text) {
+    console.log('socket on error');
+    showNotify(text);
+});
 socket.on('dockers', function (dockers) {
     console.log('socket on dockers');
     refreshDockerList(dockers);
@@ -61,4 +64,15 @@ function refreshDockerList(dockers) {
         trs += '</tr>';
     });
     dom.innerHTML = trs;
+}
+
+function showNotify(text) {
+    $.Notify({
+        shadow: true,
+        timeout: 6000,
+        style: {background: 'red', color: 'white'},
+        position: 'bottom-right',
+        caption: 'Information',
+        content: text
+    });
 }
