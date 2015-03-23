@@ -68,7 +68,7 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                             var cmd2 = ' docker --tlsverify ' +
                                 ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                                 ' -H=tcp://' + host + ':' + port +
-                                ' create -p :8080 ' + user_name + '/' + docker.name;
+                                ' create -p :8080 ' + student_namespace + '/' + docker.name;
                             console.info('[exec] '.yellow + cmd2.yellow);
                             process.exec(cmd2, function (error, stdout, stderr) {
                                 if (error !== null) {
