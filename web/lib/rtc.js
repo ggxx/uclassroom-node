@@ -45,6 +45,16 @@ function _listen(io, db, config) {
         socket.on('create_room', function (message) {
             console.log('socket on [create_room]'.blue);
 
+            if (util.isEmpty(message.name)) {
+                var rMessage = {
+                    result: false,
+                    text: 'Classroom can not be empty.',
+                    room: {}
+                };
+                socket.emit('create_room', rMessage);
+                return;
+            }
+
             if (!util.isEmpty(user.classroom)) {
                 var rMessage = {
                     result: false,
