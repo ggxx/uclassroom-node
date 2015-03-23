@@ -53,11 +53,12 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
             fs.appendFileSync(dockerFile, dockerFileText);
             git.createPrivateProject(git_host, git_port, user_token, docker.name, function (a) {
                 git.addProjectDeveloper(git_host, git_port, user_token, user_name + '%2F' + docker.name, r_teacher.id, function (b) {
+                    var student_namespace = user_name.toLowerCase();
                     var cmd = 'cd ' + my_path + ' && ' +
                         ' docker --tlsverify ' +
                         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                         ' -H=tcp://' + host + ':' + port +
-                        ' build --rm -t ' + user_name + '/' + docker.name + ' .';
+                        ' build --rm -t ' + student_namespace + '/' + docker.name + ' .';
                     console.info('[exec] '.yellow + cmd.yellow);
                     process.exec(cmd, function (error, stdout, stderr) {
                         if (error !== null) {

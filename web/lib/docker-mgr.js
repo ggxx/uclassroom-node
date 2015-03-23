@@ -37,13 +37,24 @@ function _listen(io, db, config) {
                 socket.emit('error', 'build docker failed, invalid parameters');
                 return;
             }
+            var exp = /[a-z0-9-_]+/;
+            var result = exp.test(message.dockerName);
+            if (result == false) {
+                socket.emit('error', 'Invalid docker name, only [a-z0-9-_] are allowed');
+                return;
+            }
+            if (message.dockerName.length < 4 || message.dockerName.length > 30) {
+                socket.emit('error', 'Invalid docker name, size between 4 and 30');
+                return;
+            }
+
             db.findLab(message.dockerLab, function (result_lab) {
                 if (util.isEmpty(result_lab)) {
                     socket.emit('error', 'build docker failed, parameters error');
                     return;
                 }
                 var docker = new models.Docker();
-                docker.name = message.dockerName;
+                docker.name = convertToDockerName(message.dockerName);
                 docker.lab = result_lab;
                 docker.builder = user;
                 docker.startBuildTime = new Date();
@@ -116,6 +127,10 @@ function _listen(io, db, config) {
             db.getUserDockers(user._id, function (result_dockers) {
                 socket.emit('dockers', result_dockers);
             });
+        }
+
+        function convertToDockerName(name) {
+            return name.toLowerCase().replace(/\./g, '-');
         }
     });
 }
