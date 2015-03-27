@@ -5,6 +5,8 @@ var util = require('../lib/util.js');
 var db = require('../lib/db.js');
 var api = require('../lib/api.js');
 
+var config = JSON.parse(fs.readFileSync('./public/config.json'));
+
 var router = express.Router();
 
 
@@ -28,6 +30,7 @@ router.get('/users/:edxid', function (req, res) {
                         "email": r_user.email,
                         "git_id": r_user.gitId,
                         "git_token": r_user.gitToken,
+                        "ucore_lab": "git@" + config.GIT.HOST + ":" + r_user.name + "/ucore_lab.git",
                         "name": r_user.name,
                         "password": r_user.password,
                         "private_key": r_user.privateKey,

@@ -24,6 +24,7 @@ Parameters:
     "email":"xxxxx@xxxxx.xxx",
     "git_id":32,
     "git_token":"xxxxxxxxxxxxxxxx",
+    "ucore_lab":"git@githost:gituser/gitproject.git",
     "name":"xxxxx",
     "password":"xxxxxxxxx",
     "private_key":"-----BEGIN RSA PRIVATE KEY-----\nxxxxxxxxxxxxxxxxxxxx\n-----END RSA PRIVATE KEY-----\n",
