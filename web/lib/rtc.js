@@ -195,6 +195,10 @@ function _listen(io, db, config) {
         socket.on('disconnect', function () {
             console.log('socket on [disconnect]'.blue);
 
+            if (util.isEmpty(user)) {
+                return;
+            }
+
             if (!util.isEmpty(user.classroom)) {
                 socket.leave(user.classroom._id);
 
