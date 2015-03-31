@@ -1,6 +1,6 @@
 'use strict';
 
-var SOCKET_IO_NSP = SOCKET_IO_URL + '/cloud';
+var SOCKET_IO_NSP = SOCKET_IO_URL + '/docker';
 var buildDocker = document.getElementById('buildDocker');
 var dockerName = document.getElementById('dockerName');
 var dockerLab = document.getElementById('dockerLab');

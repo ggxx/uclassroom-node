@@ -1,0 +1,15 @@
+{
+  "appenders": [
+    {
+      "type": "dateFile",
+      "filename": "uclassroom.log",
+      "pattern": "-yyyy-MM-dd",
+      "alwaysIncludePattern": true,
+      "category": "uclassroom"
+    },
+    {
+      "type": "console",
+      "category": "uclassroom"
+    }
+  ]
+}

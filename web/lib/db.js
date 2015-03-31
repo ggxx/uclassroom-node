@@ -2,6 +2,7 @@
 
 var mongodb = require('mongodb');
 var util = require('../lib/util.js');
+var jslogger = util.getJsLogger();
 var db;
 
 var USER_COLLECTION = 'users';
@@ -12,7 +13,7 @@ var LAB_COLLECTION = 'labs';
 var RESULT_COLLECTION = 'results';
 
 function _connect(url, callback) {
-    console.log('_connect'.cyan);
+    jslogger.info("db.connect");
     mongodb.MongoClient.connect(url, function (err, database) {
         if (err) throw err;
         db = database;
@@ -20,18 +21,15 @@ function _connect(url, callback) {
     });
 }
 function _validateUser(user, callback) {
-    console.log('_validateUser'.cyan);
-
+    jslogger.info("db.validateUser");
     if (user.name.length > 30 || user.name.length < 4) {
         callback('The length of name must between 4 and 30!');
         return;
     }
-
     if (user.password.length > 30 || user.password.length < 8) {
         callback('The length of password must between 8 and 30!');
         return;
     }
-
     db.collection(USER_COLLECTION).findOne({'name': user.name}, function (err, result) {
         if (err) throw err;
         if (result == null) {
@@ -51,14 +49,14 @@ function _validateUser(user, callback) {
     });
 }
 function _insertUser(user, callback) {
-    console.log('_insertUser'.cyan);
+    jslogger.info("db.insertUser");
     db.collection(USER_COLLECTION).insert(user, {safe: true}, function (err, result) {
         if (err) throw err;
         if (result.length > 0) callback(result[0]);
     });
 }
 function _updateUser(user, callback) {
-    console.log('_updateUser'.cyan);
+    jslogger.info("db.updateUser");
     db.collection(USER_COLLECTION).update({'_id': mongodb.ObjectID(user._id)},
         {
             $set: {
@@ -82,84 +80,91 @@ function _updateUser(user, callback) {
         });
 }
 function _findUser(userid, callback) {
-    console.log('_findUser'.cyan);
+    jslogger.info("db.findUser");
     db.collection(USER_COLLECTION).findOne({'_id': mongodb.ObjectID(userid)}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getUserSocket(userid, callback) {
-    console.log('_getSocketId'.cyan);
+    jslogger.info("db.getUserSocket");
     db.collection(USER_COLLECTION).findOne({'_id': mongodb.ObjectID(userid)}, function (err, result) {
         if (err) throw err;
         callback(result.socket);
     });
 }
 function _login(name, password, callback) {
-    console.log('_login'.cyan);
+    jslogger.info("db.login");
     db.collection(USER_COLLECTION).findOne({'name': name, 'password': password}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getUserByEdxId(edxid, callback) {
-    console.log('_getUserByEdxId'.cyan);
+    jslogger.info("db.getUserByEdxId");
     db.collection(USER_COLLECTION).findOne({'edxId': edxid}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getUserByEmail(email, callback) {
-    console.log('_getUserByEmail'.cyan);
+    jslogger.info("db.getUserByEmail");
     db.collection(USER_COLLECTION).findOne({'email': email}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getUserByName(name, callback) {
-    console.log('_getUserByName'.cyan);
+    jslogger.info("db.getUserByName");
     db.collection(USER_COLLECTION).findOne({'name': name}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
+function _removeUser(userid, callback) {
+    jslogger.info("db.removeUser");
+    db.collection(USER_COLLECTION).remove({'_id': mongodb.ObjectID(userid)}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
 function _getUsersInRoom(roomid, callback) {
-    console.log('_getUsersInRoom'.cyan);
+    jslogger.info("db.getUsersInRoom");
     db.collection(USER_COLLECTION).find({'classroom._id': mongodb.ObjectID(roomid)}).toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _getRooms(callback) {
-    console.log('_getRooms'.cyan);
+    jslogger.info("db.getRooms");
     db.collection(ROOM_COLLECTION).find().toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _getCurrentRooms(callback) {
-    console.log('_getCurrentRooms'.cyan);
+    jslogger.info("db.getCurrentRooms");
     db.collection(ROOM_COLLECTION).find({'endingTime': null}).toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _findRoom(roomid, callback) {
-    console.log('_findRoom'.cyan);
+    jslogger.info("db.findRoom");
     db.collection(ROOM_COLLECTION).findOne({'_id': mongodb.ObjectID(roomid)}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _insertRoom(room, callback) {
-    console.log('_insertRoom'.cyan);
+    jslogger.info("db.insertRoom");
     db.collection(ROOM_COLLECTION).insert(room, {safe: true}, function (err, result) {
         if (err) throw err;
         if (result.length > 0) callback(result[0]);
     });
 }
 function _updateRoom(room, callback) {
-    console.log('_updateRoom'.cyan);
+    jslogger.info("db.updateRoom");
     db.collection(ROOM_COLLECTION).update({'_id': mongodb.ObjectID(room._id)},
         {
             $set: {
@@ -175,42 +180,42 @@ function _updateRoom(room, callback) {
         });
 }
 function _insertMessage(message, callback) {
-    console.log('_insertMessage'.cyan);
+    jslogger.info("db.insertMessage");
     db.collection(MESSAGE_COLLECTION).insert(message, {safe: true}, function (err, result) {
         if (err) throw err;
         if (result.length > 0) callback(result[0]);
     });
 }
 function _insertDocker(docker, callback) {
-    console.log('_insertDocker'.cyan);
+    jslogger.info("db.insertDocker");
     db.collection(DOCKER_COLLECTION).insert(docker, {safe: true}, function (err, result) {
         if (err) throw err;
         if (result.length > 0) callback(result[0]);
     });
 }
 function _getUserDockers(userid, callback) {
-    console.log('_getUserDockers');
+    jslogger.info("db.getUserDockers");
     db.collection(DOCKER_COLLECTION).find({'builder._id': mongodb.ObjectID(userid)}).toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _findDocker(dockerid, callback) {
-    console.log('_findDocker'.cyan);
+    jslogger.info("db.findDocker");
     db.collection(DOCKER_COLLECTION).findOne({'_id': mongodb.ObjectID(dockerid)}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getUserDockerByName(username, dockername, callback) {
-    console.log('_getDockerByUrl'.cyan);
+    jslogger.info("db.getUserDockerByName");
     db.collection(DOCKER_COLLECTION).findOne({'builder.name': username, 'name': dockername}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _updateDocker(docker, callback) {
-    console.log('_updateDocker'.cyan);
+    jslogger.info("db.updateDocker");
     db.collection(DOCKER_COLLECTION).update({'_id': mongodb.ObjectID(docker._id)},
         {
             $set: {
@@ -230,15 +235,22 @@ function _updateDocker(docker, callback) {
             callback(result);
         });
 }
+function _removeUserDockers(userid, callback) {
+    jslogger.info("db.removeUserDockers");
+    db.collection(DOCKER_COLLECTION).remove({'builder._id': mongodb.ObjectID(userid)}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
 function _insertLab(lab, callback) {
-    console.log('_insertLab'.cyan);
+    jslogger.info("db.insertLab");
     db.collection(LAB_COLLECTION).insert(lab, {safe: true}, function (err, result) {
         if (err) throw err;
         if (result.length > 0) callback(result[0]);
     });
 }
 function _updateLab(lab, callback) {
-    console.log('_updateLab'.cyan);
+    jslogger.info("db.updateLab");
     db.collection(LAB_COLLECTION).update({'_id': mongodb.ObjectID(lab._id)},
         {
             $set: {
@@ -255,7 +267,7 @@ function _updateLab(lab, callback) {
         });
 }
 function _upsertLabByName(lab, callback) {
-    console.log('_upsertLabByName'.cyan);
+    jslogger.info("db.upsertLabByName");
     db.collection(LAB_COLLECTION).update({'name': lab.name},
         {
             $set: {
@@ -273,43 +285,39 @@ function _upsertLabByName(lab, callback) {
         });
 }
 function _findLab(labid, callback) {
-    console.log('_findLab'.cyan);
+    jslogger.info("db.findLab");
     db.collection(LAB_COLLECTION).findOne({'_id': mongodb.ObjectID(labid)}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _getReadyLabs(callback) {
-    console.log('_getReadyLabs'.cyan);
+    jslogger.info("db.getReadyLabs");
     db.collection(LAB_COLLECTION).find({status: 'ready'}).toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _getLabs(callback) {
-    console.log('_getLabs'.cyan);
+    jslogger.info("db.getLabs");
     db.collection(LAB_COLLECTION).find().toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _getLabByName(name, callback) {
-    console.log('_getLabByName'.cyan);
+    jslogger.info("db.getLabByName");
     db.collection(LAB_COLLECTION).findOne({'name': name}, function (err, result) {
         if (err) throw err;
         callback(result);
     });
 }
 function _validateLab(lab, callback) {
-    console.log('_validateLab'.cyan);
-
-    //TODO: check
-
+    jslogger.info("db.validateLab");
     if (util.isEmpty(lab.name)) {
         callback('Lab name cannot be empty!');
         return;
     }
-
     db.collection(LAB_COLLECTION).findOne({'name': lab.name}, function (err, result) {
         if (err) throw err;
         if (!util.isEmpty(result)) {
@@ -322,14 +330,14 @@ function _validateLab(lab, callback) {
     });
 }
 function _getUserResults(userid, callback) {
-    console.log('_getUserResults'.cyan);
+    jslogger.info("db.getUserResults");
     db.collection(RESULT_COLLECTION).find({'docker.builder._id': mongodb.ObjectID(userid)}).toArray(function (err, items) {
         if (err) throw err;
         callback(items);
     });
 }
 function _findResult(resultid, callback) {
-    console.log('_findResult'.cyan);
+    jslogger.info("db.findResult");
     db.collection(RESULT_COLLECTION).findOne({'_id': mongodb.ObjectID(resultid)}, function (err, result) {
         if (err) throw err;
         callback(result);
@@ -368,3 +376,5 @@ exports.findResult = _findResult;
 exports.getUserByEdxId = _getUserByEdxId;
 exports.getUserByEmail = _getUserByEmail;
 exports.getUserByName = _getUserByName;
+exports.removeUser = _removeUser;
+exports.removeUserDockers = _removeUserDockers;

@@ -13,7 +13,9 @@ GET api/users/:edxid
 
 Parameters:
 
-- edxid (required) - The ID of user in Open-Edx
+- edxid (required) - The ID of user in Open edX
+
+Response:
 
 ```
 {
@@ -41,6 +43,7 @@ Parameters:
 ```
 
 #### User creation
+
 Create a new user.
 
 ```
@@ -51,7 +54,9 @@ Parameters:
 
 - email (required) - Email
 - username (required) - Username
-- edxid (required) - The ID of user in Open-Edx
+- edxid (required) - The ID of user in Open edX
+
+Response:
 
 ```
 {
@@ -74,5 +79,31 @@ Parameters:
 {
   "result":false,
   "message":"email has been used"
+}
+```
+
+#### User deletion
+
+Delete a user.
+
+```
+DELETE /users/:id
+```
+
+Parameters:
+
+- edxid (required) - The ID of user in Open edX
+
+Response:
+
+```
+{
+  "result":true,
+}
+```
+  ,or
+```
+{
+  "result":false,
 }
 ```

@@ -4,14 +4,16 @@ var colors = require('colors');
 var cookieParser = require('cookie-parser');
 var util = require('./util.js');
 var model = require('./model.js');
+var jslogger = util.getJsLogger();
 
 function _listen(io, db, config) {
     var nsp = io.of('/classroom');
     nsp.on('connection', function (socket) {
-        console.log('socket on [connection]'.blue);
+        jslogger.info('classroom.socket on [connection]');
 
         var user;
         socket.on('bind', function (edxid) {
+            jslogger.info('classroom.socket on [bind]');
             // Bind user id and socket id
             db.getUserByEdxId(edxid, function (result_user) {
                 if (util.isEmpty(result_user)) {
@@ -32,7 +34,7 @@ function _listen(io, db, config) {
 
         // List rooms.
         socket.on('rooms', function () {
-            console.log('socket on [rooms]'.blue);
+            jslogger.info('classroom.socket on [rooms]');
             db.getCurrentRooms(function (rooms) {
                 socket.emit('rooms', rooms);
             });
@@ -43,7 +45,7 @@ function _listen(io, db, config) {
         // message.password  => room password, for future use
         // message.creator   => room creator
         socket.on('create_room', function (message) {
-            console.log('socket on [create_room]'.blue);
+            jslogger.info('classroom.socket on [create_room]');
 
             if (util.isEmpty(message.name)) {
                 var rMessage = {
@@ -80,8 +82,6 @@ function _listen(io, db, config) {
 
                 // Tell all to refresh rooms list
                 db.getCurrentRooms(function (result_rooms) {
-                    //console.log(result_rooms);
-                    //console.log('before emit rooms'.red);
                     nsp.emit('rooms', result_rooms);
                 });
             });
@@ -90,7 +90,7 @@ function _listen(io, db, config) {
         // Join room.
         // message.roomid  => room id
         socket.on('join_room', function (message) {
-            console.log('socket on [join_room]'.blue);
+            jslogger.info('classroom.socket on [join_room]');
 
             if (!util.isEmpty(user.classroom)) {
                 if (message.roomid !== user.classroom._id) {
@@ -143,7 +143,7 @@ function _listen(io, db, config) {
 
         // Leave room.
         socket.on('leave_room', function () {
-            console.log('socket on [leave_room]'.blue);
+            jslogger.info('classroom.socket on [leave_room]');
 
             if (util.isEmpty(user.classroom)) {
                 var rMessage = {
@@ -193,7 +193,7 @@ function _listen(io, db, config) {
 
         // Disconnect server.
         socket.on('disconnect', function () {
-            console.log('socket on [disconnect]'.blue);
+            jslogger.info('classroom.socket on [disconnect]');
 
             if (util.isEmpty(user)) {
                 return;
@@ -231,7 +231,7 @@ function _listen(io, db, config) {
         // List users in room.
         // message.roomid => room id
         socket.on('users', function (message) {
-            console.log('socket on [users]');
+            jslogger.info('classroom.socket on [users]');
             db.getUsersInRoom(message.roomid, function (result_users) {
                 socket.emit('users', result_users);
             });
@@ -240,7 +240,7 @@ function _listen(io, db, config) {
         // Receive text message.
         // message.text => text
         socket.on('text_message', function (message) {
-            console.log('socket on [text_message]');
+            jslogger.info('classroom.socket on [text_message]');
 
             if (util.isEmpty(user.classroom)) {
                 var rMessage = {
@@ -275,7 +275,7 @@ function _listen(io, db, config) {
         // message.answer     => answer's id
         // message.streamtype => 1.cam & mic; 2.screen; 3.screen & cam & mic
         socket.on('call', function (message) {
-            console.log('socket on [call]'.blue);
+            jslogger.info('classroom.socket on [call]');
             // Find offer's socket id to call for
             db.getUserSocket(message.offer, function (result_sid) {
                 nsp.connected[result_sid].emit('call', message);
@@ -289,7 +289,7 @@ function _listen(io, db, config) {
         // message.streamtype
         // tag => true:offer's candidate; false:answer's candidate
         socket.on('candidate', function (message) {
-            console.log('socket on [candidate]'.blue);
+            jslogger.info('classroom.socket on [candidate]');
             db.getUserSocket(message.to, function (result_sid) {
                 nsp.connected[result_sid].emit('candidate', message);
             });
@@ -301,7 +301,7 @@ function _listen(io, db, config) {
         // message.answer => answer's id
         // message.streamtype
         socket.on('answer', function (message) {
-            console.log('socket on [answer]'.blue);
+            jslogger.info('classroom.socket on [answer]');
             db.getUserSocket(message.offer, function (result_sid) {
                 nsp.connected[result_sid].emit('answer', message);
             });
@@ -313,7 +313,7 @@ function _listen(io, db, config) {
         // message.answer => answer's id
         // message.streamtype
         socket.on('offer', function (message) {
-            console.log('socket on [offer]'.blue);
+            jslogger.info('classroom.socket on [offer]');
             db.getUserSocket(message.answer, function (result_sid) {
                 nsp.connected[result_sid].emit('offer', message);
             });
@@ -324,6 +324,7 @@ function _listen(io, db, config) {
         // message.cameraSharing => true, false
         // message.microphoneSharing => true, false
         socket.on('share_cam', function (message) {
+            jslogger.info('classroom.socket on [share_cam]');
             user.cameraSharing = message.cameraSharing;
             user.microphoneSharing = message.microphoneSharing;
             db.updateUser(user, function (result_num) {
@@ -341,6 +342,7 @@ function _listen(io, db, config) {
         // message.userid =>
         // message.screenSharing => true, false
         socket.on('share_screen', function (message) {
+            jslogger.info('classroom.socket on [share_screen]');
             user.screenSharing = message.screenSharing;
             db.updateUser(user, function (result_num) {
                 var rMessage = {

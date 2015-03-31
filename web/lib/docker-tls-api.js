@@ -5,11 +5,12 @@ var colors = require('colors');
 var fs = require('fs');
 var git = require('./git.js');
 var util = require('./util.js');
+var jslogger = util.getJsLogger();
 
 var tmp_path = '/tmp/uclassroom/';
 
 function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace, lab_name, docker_file_text, callback) {
-    console.info('_buildLabDocker');
+    jslogger.info('docker.buildLabDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
             fs.mkdirSync(tmp_path);
@@ -23,13 +24,13 @@ function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace,
             ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
             ' -H=tcp://' + host + ':' + port +
             ' build --rm -t ' + docker_namespace + '/' + lab_name + ' .';
-        console.info('[exec] '.yellow + cmd.yellow);
+        jslogger.info('[exec] ' + cmd);
         process.exec(cmd, function (error, stdout, stderr) {
             if (error !== null) {
-                console.log('exec error: ' + error);
+                jslogger.error('exec error: ' + error);
             }
             else {
-                console.log('docker is readly');
+                jslogger.info('docker is ready');
                 callback('ok');
             }
         });
@@ -37,7 +38,7 @@ function _buildLabDocker(host, port, ca, cert, key, mem_limit, docker_namespace,
 }
 
 function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
-    console.info('_buildStudentDocker');
+    jslogger.info('docker.buildStudentDocker');
     fs.exists(tmp_path, function (exists) {
         if (!exists) {
             fs.mkdirSync(tmp_path);
@@ -59,24 +60,24 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                         ' -H=tcp://' + host + ':' + port +
                         ' build --rm -t ' + student_namespace + '/' + docker.name + ' .';
-                    console.info('[exec] '.yellow + cmd.yellow);
+                    jslogger.info('[exec] ' + cmd);
                     process.exec(cmd, function (error, stdout, stderr) {
                         if (error !== null) {
-                            console.log('exec error: ' + error);
+                            jslogger.error('exec error: ' + error);
                         }
                         else {
                             var cmd2 = ' docker --tlsverify ' +
                                 ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                                 ' -H=tcp://' + host + ':' + port +
                                 ' create -p :8080 ' + student_namespace + '/' + docker.name;
-                            console.info('[exec] '.yellow + cmd2.yellow);
+                            jslogger.info('[exec] ' + cmd2);
                             process.exec(cmd2, function (error, stdout, stderr) {
                                 if (error !== null) {
-                                    console.log('exec error: ' + error);
+                                    jslogger.error('exec error: ' + error);
                                 }
                                 else {
                                     docker.contId = stdout.toString();
-                                    console.log('docker is readly');
+                                    jslogger.info('docker is ready');
                                     callback('ok');
                                 }
                             });
@@ -89,27 +90,29 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
 }
 
 function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
+    jslogger.info('docker.startStudentDocker');
     var cmd = ' docker --tlsverify ' +
         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
         ' -H=tcp://' + host + ':' + port +
         ' start ' + docker.contId;
-    console.info('[exec] '.yellow + cmd.yellow);
+    jslogger.info('[exec] ' + cmd);
     process.exec(cmd, function (error, stdout, stderr) {
         if (error !== null) {
-            console.log('exec error: ' + error);
+            jslogger.error('exec error: ' + error);
         } else {
             var cmd2 = cmd = ' docker --tlsverify ' +
             ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
             ' -H=tcp://' + host + ':' + port +
             ' port ' + docker.contId;
-            console.info('[exec] '.yellow + cmd2.yellow);
+            jslogger.info('[exec] ' + cmd2);
             process.exec(cmd2, function (error, stdout, stderr) {
                 if (error !== null) {
-                    console.log('exec error: ' + error);
+                    jslogger.error('exec error: ' + error);
                 } else {
                     //stdout2 "8080/tcp -> 0.0.0.0:49153"
                     docker.host = host;
                     docker.port = stdout.toString().split(":")[1];
+                    jslogger.info('docker is running');
                     callback('ok');
                 }
             });
@@ -118,15 +121,17 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
 }
 
 function _stopStudentDocker(host, port, ca, cert, key, docker, callback) {
+    jslogger.info('docker.stopStudentDocker');
     var cmd = ' docker --tlsverify ' +
         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
         ' -H=tcp://' + host + ':' + port +
         ' stop ' + docker.contId;
-    console.info('[exec] '.yellow + cmd.yellow);
+    jslogger.info('[exec] ' + cmd);
     process.exec(cmd, function (error, stdout, stderr) {
         if (error !== null) {
-            console.log('exec error: ' + error);
+            jslogger.error('exec error: ' + error);
         } else {
+            jslogger.info('docker is stopped');
             callback('ok');
         }
     });
@@ -164,7 +169,7 @@ function _createStudentDockerfile(docker, private_key, public_key, user_name, us
         '\n' +
         '\n EXPOSE 8080' +
         '\n ENTRYPOINT ["tty.js", "--config", "/opt/ttyjs/ttyjs-config.json"]';
-    console.log(dockerfile);
+    jslogger.info(dockerfile);
     return dockerfile;
 }
 
@@ -180,7 +185,7 @@ function _createTTYJSConfig(username, password) {
         '\\n  \\"limitGlobal\\": 10000,' +
         '\\n  \\"limitPerUser\\": 1000,' +
         '\\n  \\"localOnly\\": false,' +
-        '\\n  \\"cwd\\": \\".\\",' +
+        '\\n  \\"cwd\\": \\"/ucore_lab\\",' +
         '\\n  \\"syncSession\\": false,' +
         '\\n  \\"sessionTimeout\\": 600000,' +
         '\\n  \\"log\\": true,' +

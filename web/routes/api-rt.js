@@ -5,18 +5,19 @@ var express = require('express');
 var util = require('../lib/util.js');
 var db = require('../lib/db.js');
 var api = require('../lib/api.js');
-
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
-
+var jslogger = util.getJsLogger();
 var router = express.Router();
 
-
 router.get('/', function (req, res) {
+    jslogger.info("get " + req.url);
     res.send({"result": true, "message": "I'm working!"});
+    jslogger.info("response: I'm working!");
 });
 
 // Get user by id.
 router.get('/users/:edxid', function (req, res) {
+    jslogger.info("get " + req.url);
     var edxid = req.params.edxid;
     if (util.isEmpty(edxid)) {
         sendErrorMessage(res, 'user id cannot be empty');
@@ -38,6 +39,7 @@ router.get('/users/:edxid', function (req, res) {
                         "public_key": r_user.publicKey
                     }
                 });
+                jslogger.info("response: user info");
                 return;
             } else {
                 sendErrorMessage(res, 'user id does not exist');
@@ -46,6 +48,7 @@ router.get('/users/:edxid', function (req, res) {
         });
     }
     catch (ex) {
+        jslogger.warn(ex);
         sendErrorMessage(res, 'internal error');
         return;
     }
@@ -53,8 +56,9 @@ router.get('/users/:edxid', function (req, res) {
 
 // Create user
 router.post('/users', function (req, res) {
+    jslogger.info("post " + req.url);
     try {
-        api.createGitLabAccount(req.body.edxid, req.body.username, req.body.email, function (result) {
+        api.createAccount(req.body.edxid, req.body.username, req.body.email, function (result) {
             if (result.result == true) {
                 res.send({
                     "result": true, "user": {
@@ -68,6 +72,7 @@ router.post('/users', function (req, res) {
                         "public_key": result.user.publicKey
                     }
                 });
+                jslogger.info("response: user info");
                 return;
             } else {
                 sendErrorMessage(res, result.message);
@@ -76,13 +81,42 @@ router.post('/users', function (req, res) {
         });
     }
     catch (ex) {
+        jslogger.warn(ex);
         sendErrorMessage(res, 'internal error');
         return;
     }
 });
 
+router.delete('/users/:edxid', function (req, res) {
+    jslogger.info("delete " + req.url);
+    try {
+        api.removeAccount(req.body.edxid, function (result) {
+            if (result.result == true) {
+                res.send({"result": true});
+                jslogger.info("response: true");
+                return;
+            } else {
+                sendErrorMessage(res, result.message);
+                return;
+            }
+        });
+    }
+    catch (ex) {
+        jslogger.warn(ex);
+        sendErrorMessage(res, 'internal error');
+        return;
+    }
+});
+
+// Remove User
+router.post('/users/remove/:userid', function (req, res) {
+    jslogger.info("post " + req.url);
+    // TODO: remove user
+});
+
 function sendErrorMessage(res, msg) {
     res.send({"result": false, "message": msg});
+    jslogger.info("response: " + msg);
 }
 
 module.exports = router;

@@ -8,6 +8,7 @@
   "SESSION_SECRET": "ggxxsecret",
   "TLS_KEY": "./tls/agent-test-key.pem",
   "TLS_CERT": "./tls/agent-test-cert.pem",
+  "TOKEN": "nodejs-server-token",
   "GIT": {
     "HOST": "your.gitlab.domain",
     "PORT": 80,
@@ -27,5 +28,9 @@
   },
   "LAB": {
     "DEFAULT_UCORE": "ucore_lab"
+  },
+  "LOG": {
+    "CONFIG": "/home/ggxx/Document/uclassroom-node/web/public/log4js.json",
+    "PATH": "/home/ggxx/log"
   }
 }

@@ -5,15 +5,16 @@ var cookieParser = require('cookie-parser');
 var util = require('./util.js');
 var models = require('./model.js');
 var dockerUtil = require('./docker-tls-api.js');
+var jslogger = util.getJsLogger();
 
 function _listen(io, db, config) {
-    var nsp = io.of('/cloud');
+    var nsp = io.of('/docker');
     nsp.on('connection', function (socket) {
-        console.log('socket on [connection]'.blue);
+        jslogger.info('docker.socket on [connection]');
 
         var user;
         socket.on('bind', function (edxid) {
-            console.log('bind');
+            jslogger.info('docker.socket on [bind]');
             db.getUserByEdxId(edxid, function (result_user) {
                 if (util.isEmpty(result_user)) {
                     socket.emit('error', 'cannot find edx id');
@@ -25,12 +26,12 @@ function _listen(io, db, config) {
         });
 
         socket.on('dockers', function () {
-            console.log('dockers');
+            jslogger.info('docker.socket on [dockers]');
             emitDockers();
         });
 
         socket.on('build_docker', function (message) {
-            console.log('build_docker');
+            jslogger.info('docker.socket on [build_docker]');
             // message.dockerLab: docker._id
             // message.dockerName: docker.name
             if (util.isEmpty(message.dockerLab) || util.isEmpty(message.dockerName) || (message.dockerLab.length != 12 && message.dockerLab.length != 24)) {
@@ -80,7 +81,7 @@ function _listen(io, db, config) {
         });
 
         socket.on('start_docker', function (dockerid) {
-            console.log('start_docker');
+            jslogger.info('docker.socket on [start_docker]');
             db.findDocker(dockerid, function (result_docker) {
                 if (util.isEmpty(result_docker)) {
                     socket.emit('error', 'cannot find docker, parameters error');
@@ -102,7 +103,7 @@ function _listen(io, db, config) {
         });
 
         socket.on('stop_docker', function (dockerid) {
-            console.log('stop_docker');
+            jslogger.info('docker.socket on [stop_docker]');
             db.findDocker(dockerid, function (result_docker) {
                 if (util.isEmpty(result_docker)) {
                     socket.emit('error', 'cannot find docker, parameters error');
