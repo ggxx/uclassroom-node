@@ -105,5 +105,6 @@ Response:
 ```
 {
   "result":false,
+  "message":"cannot find user by edx id"
 }
 ```
