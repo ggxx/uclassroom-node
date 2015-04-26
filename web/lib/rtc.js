@@ -4,7 +4,8 @@ var colors = require('colors');
 var cookieParser = require('cookie-parser');
 var util = require('./util.js');
 var model = require('./model.js');
-var jslogger = util.getJsLogger();
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 
 function _listen(io, db, config) {
     var nsp = io.of('/classroom');

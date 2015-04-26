@@ -14,7 +14,8 @@ var sio = require('socket.io');
 var log4js = require('log4js');
 
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
-var jslogger = util.initJsLogger(config.LOG.CONFIG, config.LOG.PATH);
+var loggerUtil = require('./lib/logger.js');
+var jslogger = loggerUtil.initJsLogger(config.LOG.CONFIG, config.LOG.PATH);
 var options = {
     key: fs.readFileSync(config.TLS_KEY),
     cert: fs.readFileSync(config.TLS_CERT)

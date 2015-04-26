@@ -51,6 +51,7 @@ function refreshDockerList(dockers) {
             trs += '<td class="right">';
             trs += '<a class="bg-green fg-white button small" href="javascript:stopDocker(\'' + docker._id + '\');">Stop</a> ';
             trs += '<a class="bg-green fg-white button small" href="http://' + docker.host + ':' + docker.port + '/" target="_blank">Web Terminal</a> ';
+            trs += '<a class="bg-green fg-white button small" href="/north/' + docker.contId + '/" target="_blank">Web Terminal</a> ';
             trs += '</td>';
         }
         else if (docker.status == 'ready') {

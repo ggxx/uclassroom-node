@@ -3,7 +3,8 @@
 var http = require('http');
 var qs = require('querystring');
 var util = require('./util.js');
-var jslogger = util.getJsLogger();
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 
 function _createGitAccount(host, port, adminToken, email, password, username, name, callback) {
     jslogger.info('git.createGitAccount');

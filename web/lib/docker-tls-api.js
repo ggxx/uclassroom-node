@@ -5,7 +5,8 @@ var colors = require('colors');
 var fs = require('fs');
 var git = require('./git.js');
 var util = require('./util.js');
-var jslogger = util.getJsLogger();
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 
 var tmp_path = '/tmp/uclassroom/';
 
@@ -76,7 +77,7 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                                     jslogger.error('exec error: ' + error);
                                 }
                                 else {
-                                    docker.contId = stdout.toString();
+                                    docker.contId = stdout.toString().replace(/\n/g, "");
                                     jslogger.info('docker is ready');
                                     callback('ok');
                                 }
@@ -111,7 +112,7 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
                 } else {
                     //stdout2 "8080/tcp -> 0.0.0.0:49153"
                     docker.host = host;
-                    docker.port = stdout.toString().split(":")[1];
+                    docker.port = stdout.toString().split(":")[1].replace(/\n/g, "");
                     jslogger.info('docker is running');
                     callback('ok');
                 }

@@ -1,8 +1,9 @@
 'use strict';
 
 var mongodb = require('mongodb');
-var util = require('../lib/util.js');
-var jslogger = util.getJsLogger();
+var util = require('./util.js');
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 var db;
 
 var USER_COLLECTION = 'users';
@@ -200,6 +201,13 @@ function _getUserDockers(userid, callback) {
         callback(items);
     });
 }
+function _getDockerByContainerId(contId, callback){
+    jslogger.info("db.getDockerByContainerId");
+    db.collection(DOCKER_COLLECTION).findOne({'contId': contId}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
 function _findDocker(dockerid, callback) {
     jslogger.info("db.findDocker");
     db.collection(DOCKER_COLLECTION).findOne({'_id': mongodb.ObjectID(dockerid)}, function (err, result) {
@@ -378,3 +386,4 @@ exports.getUserByEmail = _getUserByEmail;
 exports.getUserByName = _getUserByName;
 exports.removeUser = _removeUser;
 exports.removeUserDockers = _removeUserDockers;
+exports.getDockerByContainerId = _getDockerByContainerId;

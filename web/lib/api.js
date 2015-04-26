@@ -8,7 +8,8 @@ var models = require('./model.js');
 var git = require('./git.js');
 var dockerApi = require('./docker-tls-api.js');
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
-var jslogger = util.getJsLogger();
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 
 function _createAccount(edxid, username, email, callback) {
     jslogger.info("api.createAccount");
