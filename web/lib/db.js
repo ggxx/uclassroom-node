@@ -23,8 +23,8 @@ function _connect(url, callback) {
 }
 function _validateUser(user, callback) {
     jslogger.info("db.validateUser");
-    if (user.name.length > 30 || user.name.length < 4) {
-        callback('The length of name must between 4 and 30!');
+    if (user.name.length > 30 || user.name.length < 3) {
+        callback('The length of name must between 3 and 30!');
         return;
     }
     if (user.password.length > 30 || user.password.length < 8) {

@@ -11,7 +11,7 @@ var config = JSON.parse(fs.readFileSync('./public/config.json'));
 var loggerUtil = require('./logger.js');
 var jslogger = loggerUtil.getLogger();
 
-function _createAccount(edxid, username, email, callback) {
+function _createAccount(edxid, edxname, email, callback) {
     jslogger.info("api.createAccount");
 
     if (util.isEmpty(edxid)) {
@@ -31,7 +31,7 @@ function _createAccount(edxid, username, email, callback) {
             callback({result: false, message: 'edx id has been registered'});
             return;
         }
-        if (util.isEmpty(username)) {
+        if (util.isEmpty(edxname)) {
             callback({result: false, message: 'user name cannot be empty'});
             return;
         }
@@ -40,7 +40,7 @@ function _createAccount(edxid, username, email, callback) {
             return;
         }
         try {
-            db.getUserByName(username, function (r_user) {
+            db.getUserByName(edxname, function (r_user) {
                 if (!util.isEmpty(r_user)) {
                     callback({result: false, message: 'name has been used'});
                     return;
@@ -52,7 +52,7 @@ function _createAccount(edxid, username, email, callback) {
                     }
                     // create account
                     var user = new models.User();
-                    user.name = username;
+                    user.name = edxname;
                     user.password = util.randomId();
                     user.creatingTime = new Date();
                     user.email = email;
@@ -147,32 +147,38 @@ function _removeAccount(edxid, callback) {
         return;
     }
 
-    db.getUserByEdxId(edxid, function (user) {
-        if (!util.isEmpty(user)) {
-            db.getUserDockers(user._id, function (dockers) {
-                dockers.forEach(function (docker) {
-                    dockerApi.stopStudentDocker(docker.contId, function () {
-                        dockerApi.removeStudentDocker(docker.contId, function () {
-                            dockerApi.removeImage(docker.name, function () {
+    try {
+        db.getUserByEdxId(edxid, function (user) {
+            if (!util.isEmpty(user)) {
+                db.getUserDockers(user._id, function (dockers) {
+                    dockers.forEach(function (docker) {
+                        dockerApi.stopStudentDocker(docker.contId, function () {
+                            dockerApi.removeStudentDocker(docker.contId, function () {
+                                dockerApi.removeImage(docker.name, function () {
+                                });
                             });
                         });
                     });
-                });
-                db.removeUserDockers(user._id, function (result1) {
-                    db.removeUser(user._id, function (result2) {
+                    db.removeUserDockers(user._id, function (result1) {
+                        db.removeUser(user._id, function (result2) {
+                        });
                     });
                 });
-            });
-            git.removeGitAccount(config.GIT.HOST, config.GIT.PORT, config.GIT.TOKEN, user.gitId, function () {
-            });
-            callback({result: true, message: ''});
-            return;
-        }
-        else {
-            callback({result: false, message: 'cannot find user by edx id'});
-            return;
-        }
-    });
+                git.removeGitAccount(config.GIT.HOST, config.GIT.PORT, config.GIT.TOKEN, user.gitId, function () {
+                });
+                callback({result: true, message: ''});
+                return;
+            }
+            else {
+                callback({result: false, message: 'cannot find user by edx id'});
+                return;
+            }
+        });
+    } catch (ex) {
+        jslogger.info(ex);
+        callback({result: false, message: 'internal error'});
+        return;
+    }
 }
 
 exports.createAccount = _createAccount;
