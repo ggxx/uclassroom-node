@@ -56,7 +56,7 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
             git.createPrivateProject(git_host, git_port, user_token, docker.name, function (a) {
                 git.addProjectDeveloper(git_host, git_port, user_token, user_name + '%2F' + docker.name, r_teacher.id, function (b) {
                     var student_namespace = user_name.toLowerCase();
-                    if (student_namespce.length < 4) {
+                    if (student_namespace.length < 4) {
                         student_namespace += "____";
                     }
                     var cmd = 'cd ' + my_path + ' && ' +
@@ -151,7 +151,7 @@ function _rebuildStudentDocker(host, port, ca, cert, key, mem_limit, docker, pri
         jslogger.info('[exec] ' + rmCmd);
         process.exec(rmCmd, function (error, stdout, stderr) {
             var student_namespace = user_name.toLowerCase();
-            if (student_namespce.length < 4) {
+            if (student_namespace.length < 4) {
                 student_namespace += "____";
             }
             var rmiCmd = 'docker --tlsverify ' +
