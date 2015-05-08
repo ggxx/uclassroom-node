@@ -73,7 +73,7 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                             var cmd2 = ' docker --tlsverify ' +
                                 ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                                 ' -H=tcp://' + host + ':' + port +
-                                ' create -p :8080 -m ' + mem_limit + ' ' + student_namespace + '/' + docker.name;
+                                ' create -p :8080 -p :6080 -m ' + mem_limit + ' ' + student_namespace + '/' + docker.name;
                             jslogger.info('[exec] ' + cmd2);
                             process.exec(cmd2, function (error, stdout, stderr) {
                                 if (error !== null) {
@@ -112,9 +112,19 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
                 if (error !== null) {
                     jslogger.error('exec error: ' + error);
                 } else {
-                    //stdout2 "8080/tcp -> 0.0.0.0:49153"
+                    //stdout:
+                    // 8080/tcp -> 0.0.0.0:58080
+                    // 6080/tcp -> 0.0.0.0:56080
                     docker.host = host;
-                    docker.port = stdout.toString().split(":")[1].replace(/\n/g, "");
+                    stdout.toString().split("\n").forEach(function (item) {
+                        if (item.split('/')[0] == '6080') {
+                            // noVNC port
+                            docker.vnc = item.split(":")[1].replace(/\n/g, "");
+                        } else if (item.split('/')[0] == '8080') {
+                            // ttyjs port
+                            docker.port = item.split(":")[1].replace(/\n/g, "");
+                        }
+                    });
                     jslogger.info('docker is running');
                     callback('ok');
                 }
@@ -204,26 +214,22 @@ function _createStudentDockerfile(docker, private_key, public_key, user_name, us
         '\nRUN echo -ne "' + private_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa;\\' +
         '\n  echo -ne "' + public_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa.pub;\\' +
         '\n  chmod 0600 /root/.ssh/id_rsa ;\\' +
+        '\n  echo -ne "' + +_createStartupShell() + '" > /startup.sh;\\' +
         '\n  echo -ne "' + _createTTYJSConfig(user_name, user_pwd) + '" > /opt/ttyjs/ttyjs-config.json;\\' +
+        '\n  echo ' + user_pwd + ' | echo $(vncpasswd -f) > /root/.vnc/passwd;\\' +
+        '\n  chmod 0600 /root/.vnc/passwd;\\' +
         '\n  git config --global user.name "' + user_name + '" ;\\' +
         '\n  git config --global user.email "' + user_email + '" ;\\' +
         '\n  echo -ne "StrictHostKeyChecking no\\nUserKnownHostsFile /dev/null\\n" >> /etc/ssh/ssh_config ;\\' +
-        '\n  mkdir /' + docker.name + ' ;\\' +
-        '\n  cd /' + docker.name + ' ;\\' +
-        '\n  git init ;\\' +
-        '\n  wget -q -O /' + docker.name + '/archive.tar.gz http://' + git_host + ':' + git_port + '/' + teacher_name + '/' + docker.lab.project + '/repository/archive.tar.gz ;\\' +
-        '\n  tar -xzf /' + docker.name + '/archive.tar.gz -C /' + docker.name + '/ ;\\' +
-        '\n  cp -r /' + docker.name + '/' + docker.lab.project + '.git/* /' + docker.name + '/ ;\\' +
-        '\n  rm -r /' + docker.name + '/' + docker.lab.project + '.git ;\\' +
-        '\n  rm /' + docker.name + '/archive.tar.gz ;\\' +
-        '\n  cd /' + docker.name + ' ;\\' +
-        '\n  git add . ;\\' +
+        '\n  cd /ucore_lab/;\\' +
         '\n  git remote add origin git@' + git_host + ':' + user_name + '/' + docker.name + '.git ;\\' +
-        '\n  git commit -a -s -m "init" ;\\' +
         '\n  git push -u origin master ;' +
         '\n' +
+            //'\n EXPOSE 22' +
+            //'\n EXPOSE 5901' +
+        '\n EXPOSE 6080' +
         '\n EXPOSE 8080' +
-        '\n ENTRYPOINT ["tty.js", "--config", "/opt/ttyjs/ttyjs-config.json"]';
+        '\n ENTRYPOINT ["startup.sh"]';
     jslogger.info(dockerfile);
     return dockerfile;
 }
@@ -277,7 +283,17 @@ function _createTTYJSConfig(username, password) {
     return text;
 }
 
+function _createStartupShell() {
+    var text =
+        '#!/usr/bin/env bash\\n' +
+        'nvncserver\\n' +
+        '/opt/noVNC/utils/launch.sh --vnc localhost:5901\\n' +
+        'tty.js --config /opt/ttyjs/ttyjs-config.json';
+    return text;
+}
+
 exports.buildLabDocker = _buildLabDocker;
 exports.buildStudentDocker = _buildStudentDocker;
 exports.startStudentDocker = _startStudentDocker;
 exports.stopStudentDocker = _stopStudentDocker;
+exports.rebuildStudentDocker = _rebuildStudentDocker;
