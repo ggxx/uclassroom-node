@@ -13,5 +13,6 @@ RUN	mkdir /root/.ssh;\
     mkdir /root/.vnc
 RUN cd / && git clone https://github.com/chyyuu/ucore_lab.git;\
     cd /ucore_lab/ && git remote remove origin
-RUN systemctl enable sshd;\
-    systemctl start sshd
+
+CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/usr/bin/bash"]
