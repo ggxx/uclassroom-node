@@ -104,9 +104,9 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
             jslogger.error('exec error: ' + error);
         } else {
             var cmd2 = cmd = ' docker --tlsverify ' +
-            ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
-            ' -H=tcp://' + host + ':' + port +
-            ' port ' + docker.contId;
+                ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+                ' -H=tcp://' + host + ':' + port +
+                ' port ' + docker.contId;
             jslogger.info('[exec] ' + cmd2);
             process.exec(cmd2, function (error, stdout, stderr) {
                 if (error !== null) {
@@ -204,32 +204,26 @@ function _rebuildStudentDocker(host, port, ca, cert, key, mem_limit, docker, pri
 
 function _createStudentDockerfile(docker, private_key, public_key, user_name, user_pwd, user_email, git_host, git_port, docker_namespace, teacher_name) {
     var dockerfile =
-        '# ' + docker.name +
-        '\n#' +
-        '\n# VERSION    0.0.1' +
-        '\n' +
-        '\nFROM ' + docker_namespace + '/' + docker.lab.name +
+        'FROM ' + docker_namespace + '/' + docker.lab.name +
         '\nMAINTAINER Guo Xu <ggxx120@gmail.com>' +
         '\n' +
         '\nRUN echo -ne "' + private_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa;\\' +
         '\n  echo -ne "' + public_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa.pub;\\' +
         '\n  chmod 0600 /root/.ssh/id_rsa ;\\' +
-        '\n  echo -ne "' + +_createStartupShell() + '" > /startup.sh;\\' +
+        '\n  echo -ne "' + _createStartupShell() + '" > /startup.sh;\\' +
         '\n  echo -ne "' + _createTTYJSConfig(user_name, user_pwd) + '" > /opt/ttyjs/ttyjs-config.json;\\' +
         '\n  echo ' + user_pwd + ' | echo $(vncpasswd -f) > /root/.vnc/passwd;\\' +
         '\n  chmod 0600 /root/.vnc/passwd;\\' +
         '\n  git config --global user.name "' + user_name + '" ;\\' +
         '\n  git config --global user.email "' + user_email + '" ;\\' +
         '\n  echo -ne "StrictHostKeyChecking no\\nUserKnownHostsFile /dev/null\\n" >> /etc/ssh/ssh_config ;\\' +
-        '\n  cd /ucore_lab/;\\' +
-        '\n  git remote add origin git@' + git_host + ':' + user_name + '/' + docker.name + '.git ;\\' +
-        '\n  git push -u origin master ;' +
+        '\n  cd /ucore_lab/ && git remote add origin git@' + git_host + ':' + user_name + '/' + docker.name + '.git && git push -u origin master' +
         '\n' +
             //'\n EXPOSE 22' +
             //'\n EXPOSE 5901' +
-        '\n EXPOSE 6080' +
-        '\n EXPOSE 8080' +
-        '\n ENTRYPOINT ["startup.sh"]';
+        '\nEXPOSE 6080' +
+        '\nEXPOSE 8080' +
+        '\nENTRYPOINT ["startup.sh"]';
     jslogger.info(dockerfile);
     return dockerfile;
 }
