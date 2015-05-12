@@ -59,6 +59,7 @@ _docker.prototype = {
     contId: '',
     host: '',
     port: 0,
+    vnc: 0,
     status: ''
 }
 

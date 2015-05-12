@@ -104,17 +104,17 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
             jslogger.error('exec error: ' + error);
         } else {
             var cmd2 = cmd = ' docker --tlsverify ' +
-                ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
-                ' -H=tcp://' + host + ':' + port +
-                ' port ' + docker.contId;
+            ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+            ' -H=tcp://' + host + ':' + port +
+            ' port ' + docker.contId;
             jslogger.info('[exec] ' + cmd2);
             process.exec(cmd2, function (error, stdout, stderr) {
                 if (error !== null) {
                     jslogger.error('exec error: ' + error);
                 } else {
                     //stdout:
-                    // 8080/tcp -> 0.0.0.0:58080
-                    // 6080/tcp -> 0.0.0.0:56080
+                    // 6080/tcp -> 0.0.0.0:49100
+                    // 8080/tcp -> 0.0.0.0:49101
                     docker.host = host;
                     stdout.toString().split("\n").forEach(function (item) {
                         if (item.split('/')[0] == '6080') {
@@ -224,7 +224,7 @@ function _createStudentDockerfile(docker, private_key, public_key, user_name, us
             //'\n EXPOSE 5901' +
         '\nEXPOSE 6080' +
         '\nEXPOSE 8080' +
-        '\nENTRYPOINT ["startup.sh"]';
+        '\nENTRYPOINT ["/startup.sh"]';
     jslogger.info(dockerfile);
     return dockerfile;
 }
@@ -281,9 +281,7 @@ function _createTTYJSConfig(username, password) {
 function _createStartupShell() {
     var text =
         '#!/usr/bin/env bash \\n' +
-        'vncserver > /dev/null \\n' +
-        '/opt/noVNC/utils/launch.sh --vnc localhost:5901 > /dev/null \\n' +
-        'tty.js --config /opt/ttyjs/ttyjs-config.json > /dev/null';
+        '(vncserver && /opt/noVNC/utils/launch.sh --vnc localhost:5901) & tty.js --config /opt/ttyjs/ttyjs-config.json';
     return text;
 }
 

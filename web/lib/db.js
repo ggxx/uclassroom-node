@@ -235,6 +235,7 @@ function _updateDocker(docker, callback) {
                 'lastRunTime': docker.lastRunTime,
                 'host': docker.host,
                 'port': docker.port,
+                'vnc': docker.vnc,
                 'contId': docker.contId,
                 'status': docker.status
             }

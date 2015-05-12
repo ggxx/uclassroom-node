@@ -51,6 +51,9 @@ function refreshDockerList(dockers) {
             trs += '<td class="right">';
             trs += '<a class="bg-green fg-white button small" href="javascript:stopDocker(\'' + docker._id + '\');">Stop</a> ';
             trs += '<a class="bg-green fg-white button small" href="http://' + docker.host + ':' + docker.port + '/" target="_blank">Web Terminal</a> ';
+            if (docker.vnc != 0) {
+                trs += '<a class="bg-green fg-white button small" href="http://' + docker.host + ':' + docker.vnc + '/vnc_auto.html" target="_blank">Web VNC</a> ';
+            }
             trs += '</td>';
         }
         else if (docker.status == 'ready') {
