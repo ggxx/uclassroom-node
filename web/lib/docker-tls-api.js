@@ -280,10 +280,10 @@ function _createTTYJSConfig(username, password) {
 
 function _createStartupShell() {
     var text =
-        '#!/usr/bin/env bash\\n' +
-        'nvncserver\\n' +
-        '/opt/noVNC/utils/launch.sh --vnc localhost:5901\\n' +
-        'tty.js --config /opt/ttyjs/ttyjs-config.json';
+        '#!/usr/bin/env bash \\n' +
+        'vncserver > /dev/null \\n' +
+        '/opt/noVNC/utils/launch.sh --vnc localhost:5901 > /dev/null \\n' +
+        'tty.js --config /opt/ttyjs/ttyjs-config.json > /dev/null';
     return text;
 }
 
