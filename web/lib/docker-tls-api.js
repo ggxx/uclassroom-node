@@ -211,6 +211,7 @@ function _createStudentDockerfile(docker, private_key, public_key, user_name, us
         '\n  echo -ne "' + public_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa.pub;\\' +
         '\n  chmod 0600 /root/.ssh/id_rsa ;\\' +
         '\n  echo -ne "' + _createStartupShell() + '" > /startup.sh;\\' +
+        '\n  chmod +x /startup.sh;\\' +
         '\n  echo -ne "' + _createTTYJSConfig(user_name, user_pwd) + '" > /opt/ttyjs/ttyjs-config.json;\\' +
         '\n  echo ' + user_pwd + ' | echo $(vncpasswd -f) > /root/.vnc/passwd;\\' +
         '\n  chmod 0600 /root/.vnc/passwd;\\' +
