@@ -30,7 +30,7 @@
     "DEFAULT_UCORE": "ucore_lab"
   },
   "LOG": {
-    "CONFIG": "/home/ggxx/Document/uclassroom-node/web/public/log4js.json",
+    "CONFIG": "/home/ggxx/Documents/uclassroom-node/web/public/log4js.json",
     "PATH": "/home/ggxx/log"
   }
 }

@@ -5,7 +5,8 @@ var colors = require('colors');
 var fs = require('fs');
 var git = require('./git.js');
 var util = require('./util.js');
-var jslogger = util.getJsLogger();
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 
 var tmp_path = '/tmp/uclassroom/';
 
@@ -55,6 +56,9 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
             git.createPrivateProject(git_host, git_port, user_token, docker.name, function (a) {
                 git.addProjectDeveloper(git_host, git_port, user_token, user_name + '%2F' + docker.name, r_teacher.id, function (b) {
                     var student_namespace = user_name.toLowerCase();
+                    if (student_namespace.length < 4) {
+                        student_namespace += "____";
+                    }
                     var cmd = 'cd ' + my_path + ' && ' +
                         ' docker --tlsverify ' +
                         ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
@@ -69,14 +73,13 @@ function _buildStudentDocker(host, port, ca, cert, key, mem_limit, docker, priva
                             var cmd2 = ' docker --tlsverify ' +
                                 ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
                                 ' -H=tcp://' + host + ':' + port +
-                                ' create -p :8080 ' + student_namespace + '/' + docker.name;
+                                ' create -p :8080 -p :6080 -m ' + mem_limit + ' ' + student_namespace + '/' + docker.name;
                             jslogger.info('[exec] ' + cmd2);
                             process.exec(cmd2, function (error, stdout, stderr) {
                                 if (error !== null) {
                                     jslogger.error('exec error: ' + error);
-                                }
-                                else {
-                                    docker.contId = stdout.toString();
+                                } else {
+                                    docker.contId = stdout.toString().replace(/\n/g, "");
                                     jslogger.info('docker is ready');
                                     callback('ok');
                                 }
@@ -109,9 +112,19 @@ function _startStudentDocker(host, port, ca, cert, key, docker, callback) {
                 if (error !== null) {
                     jslogger.error('exec error: ' + error);
                 } else {
-                    //stdout2 "8080/tcp -> 0.0.0.0:49153"
+                    //stdout:
+                    // 6080/tcp -> 0.0.0.0:49100
+                    // 8080/tcp -> 0.0.0.0:49101
                     docker.host = host;
-                    docker.port = stdout.toString().split(":")[1];
+                    stdout.toString().split("\n").forEach(function (item) {
+                        if (item.split('/')[0] == '6080') {
+                            // noVNC port
+                            docker.vnc = item.split(":")[1].replace(/\n/g, "");
+                        } else if (item.split('/')[0] == '8080') {
+                            // ttyjs port
+                            docker.port = item.split(":")[1].replace(/\n/g, "");
+                        }
+                    });
                     jslogger.info('docker is running');
                     callback('ok');
                 }
@@ -137,38 +150,81 @@ function _stopStudentDocker(host, port, ca, cert, key, docker, callback) {
     });
 }
 
+function _rebuildStudentDocker(host, port, ca, cert, key, mem_limit, docker, private_key, public_key, user_name, user_psw, user_email, user_token, git_host, git_port, teacher_token, docker_namespace, callback) {
+    jslogger.info('docker.rebuildStudentDocker');
+
+    _stopStudentDocker(host, port, ca, cert, key, docker, function (result) {
+        var rmCmd = 'docker --tlsverify ' +
+            ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+            ' -H=tcp://' + host + ':' + port +
+            ' rm ' + docker.contId;
+        jslogger.info('[exec] ' + rmCmd);
+        process.exec(rmCmd, function (error, stdout, stderr) {
+            var student_namespace = user_name.toLowerCase();
+            if (student_namespace.length < 4) {
+                student_namespace += "____";
+            }
+            var rmiCmd = 'docker --tlsverify ' +
+                ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+                ' -H=tcp://' + host + ':' + port +
+                ' rmi ' + student_namespace + '/' + docker.name;
+            jslogger.info('[exec] ' + rmiCmd);
+            process.exec(rmiCmd, function (error, stdout, stderr) {
+                var cmd = 'cd ' + my_path + ' && ' +
+                    ' docker --tlsverify ' +
+                    ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+                    ' -H=tcp://' + host + ':' + port +
+                    ' build --rm -t ' + student_namespace + '/' + docker.name + ' .';
+                jslogger.info('[exec] ' + cmd);
+                process.exec(cmd, function (error, stdout, stderr) {
+                    if (error !== null) {
+                        jslogger.error('exec error: ' + error);
+                    }
+                    else {
+                        var createCmd = ' docker --tlsverify ' +
+                            ' --tlscacert=' + ca + ' --tlscert=' + cert + ' --tlskey=' + key +
+                            ' -H=tcp://' + host + ':' + port +
+                            ' create -p :8080 -m ' + mem_limit + ' ' + student_namespace + '/' + docker.name;
+                        jslogger.info('[exec] ' + createCmd);
+                        process.exec(createCmd, function (error, stdout, stderr) {
+                            if (error !== null) {
+                                jslogger.error('exec error: ' + error);
+                            } else {
+                                docker.contId = stdout.toString().replace(/\n/g, "");
+                                jslogger.info('docker is ready');
+                                callback('ok');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    });
+}
+
 function _createStudentDockerfile(docker, private_key, public_key, user_name, user_pwd, user_email, git_host, git_port, docker_namespace, teacher_name) {
     var dockerfile =
-        '# ' + docker.name +
-        '\n#' +
-        '\n# VERSION    0.0.1' +
-        '\n' +
-        '\nFROM ' + docker_namespace + '/' + docker.lab.name +
+        'FROM ' + docker_namespace + '/' + docker.lab.name +
         '\nMAINTAINER Guo Xu <ggxx120@gmail.com>' +
         '\n' +
         '\nRUN echo -ne "' + private_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa;\\' +
         '\n  echo -ne "' + public_key.replace(/\n/g, '\\n') + '" > /root/.ssh/id_rsa.pub;\\' +
         '\n  chmod 0600 /root/.ssh/id_rsa ;\\' +
+        '\n  echo -ne "' + _createStartupShell() + '" > /startup.sh;\\' +
+        '\n  chmod +x /startup.sh;\\' +
         '\n  echo -ne "' + _createTTYJSConfig(user_name, user_pwd) + '" > /opt/ttyjs/ttyjs-config.json;\\' +
+        '\n  echo ' + user_pwd + ' | echo $(vncpasswd -f) > /root/.vnc/passwd;\\' +
+        '\n  chmod 0600 /root/.vnc/passwd;\\' +
         '\n  git config --global user.name "' + user_name + '" ;\\' +
         '\n  git config --global user.email "' + user_email + '" ;\\' +
         '\n  echo -ne "StrictHostKeyChecking no\\nUserKnownHostsFile /dev/null\\n" >> /etc/ssh/ssh_config ;\\' +
-        '\n  mkdir /' + docker.name + ' ;\\' +
-        '\n  cd /' + docker.name + ' ;\\' +
-        '\n  git init ;\\' +
-        '\n  wget -q -O /' + docker.name + '/archive.tar.gz http://' + git_host + ':' + git_port + '/' + teacher_name + '/' + docker.lab.project + '/repository/archive.tar.gz ;\\' +
-        '\n  tar -xzf /' + docker.name + '/archive.tar.gz -C /' + docker.name + '/ ;\\' +
-        '\n  cp -r /' + docker.name + '/' + docker.lab.project + '.git/* /' + docker.name + '/ ;\\' +
-        '\n  rm -r /' + docker.name + '/' + docker.lab.project + '.git ;\\' +
-        '\n  rm /' + docker.name + '/archive.tar.gz ;\\' +
-        '\n  cd /' + docker.name + ' ;\\' +
-        '\n  git add . ;\\' +
-        '\n  git remote add origin git@' + git_host + ':' + user_name + '/' + docker.name + '.git ;\\' +
-        '\n  git commit -a -s -m "init" ;\\' +
-        '\n  git push -u origin master ;' +
+        '\n  cd /ucore_lab/ && git remote add origin git@' + git_host + ':' + user_name + '/' + docker.name + '.git && git push -u origin master' +
         '\n' +
-        '\n EXPOSE 8080' +
-        '\n ENTRYPOINT ["tty.js", "--config", "/opt/ttyjs/ttyjs-config.json"]';
+            //'\n EXPOSE 22' +
+            //'\n EXPOSE 5901' +
+        '\nEXPOSE 6080' +
+        '\nEXPOSE 8080' +
+        '\nENTRYPOINT ["/startup.sh"]';
     jslogger.info(dockerfile);
     return dockerfile;
 }
@@ -193,7 +249,7 @@ function _createTTYJSConfig(username, password) {
         '\\n  \\"debug\\": false,' +
         '\\n  \\"term\\": {' +
         '\\n    \\"termName\\": \\"xterm\\",' +
-        '\\n    \\"geometry\\": [80, 24],' +
+        '\\n    \\"geometry\\": [160, 48],' +
         '\\n    \\"scrollback\\": 1000,' +
         '\\n    \\"visualBell\\": false,' +
         '\\n    \\"popOnBell\\": false,' +
@@ -222,7 +278,15 @@ function _createTTYJSConfig(username, password) {
     return text;
 }
 
+function _createStartupShell() {
+    var text =
+        '#!/usr/bin/env bash \\n' +
+        '(vncserver && /opt/noVNC/utils/launch.sh --vnc localhost:5901) & tty.js --config /opt/ttyjs/ttyjs-config.json';
+    return text;
+}
+
 exports.buildLabDocker = _buildLabDocker;
 exports.buildStudentDocker = _buildStudentDocker;
 exports.startStudentDocker = _startStudentDocker;
 exports.stopStudentDocker = _stopStudentDocker;
+exports.rebuildStudentDocker = _rebuildStudentDocker;

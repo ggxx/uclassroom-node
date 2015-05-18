@@ -1,8 +1,9 @@
 'use strict';
 
 var mongodb = require('mongodb');
-var util = require('../lib/util.js');
-var jslogger = util.getJsLogger();
+var util = require('./util.js');
+var loggerUtil = require('./logger.js');
+var jslogger = loggerUtil.getLogger();
 var db;
 
 var USER_COLLECTION = 'users';
@@ -22,8 +23,8 @@ function _connect(url, callback) {
 }
 function _validateUser(user, callback) {
     jslogger.info("db.validateUser");
-    if (user.name.length > 30 || user.name.length < 4) {
-        callback('The length of name must between 4 and 30!');
+    if (user.name.length > 30 || user.name.length < 3) {
+        callback('The length of name must between 3 and 30!');
         return;
     }
     if (user.password.length > 30 || user.password.length < 8) {
@@ -200,6 +201,13 @@ function _getUserDockers(userid, callback) {
         callback(items);
     });
 }
+function _getDockerByContainerId(contId, callback){
+    jslogger.info("db.getDockerByContainerId");
+    db.collection(DOCKER_COLLECTION).findOne({'contId': contId}, function (err, result) {
+        if (err) throw err;
+        callback(result);
+    });
+}
 function _findDocker(dockerid, callback) {
     jslogger.info("db.findDocker");
     db.collection(DOCKER_COLLECTION).findOne({'_id': mongodb.ObjectID(dockerid)}, function (err, result) {
@@ -227,6 +235,7 @@ function _updateDocker(docker, callback) {
                 'lastRunTime': docker.lastRunTime,
                 'host': docker.host,
                 'port': docker.port,
+                'vnc': docker.vnc,
                 'contId': docker.contId,
                 'status': docker.status
             }
@@ -378,3 +387,4 @@ exports.getUserByEmail = _getUserByEmail;
 exports.getUserByName = _getUserByName;
 exports.removeUser = _removeUser;
 exports.removeUserDockers = _removeUserDockers;
+exports.getDockerByContainerId = _getDockerByContainerId;

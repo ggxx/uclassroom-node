@@ -6,7 +6,8 @@ var util = require('../lib/util.js');
 var db = require('../lib/db.js');
 var api = require('../lib/api.js');
 var config = JSON.parse(fs.readFileSync('./public/config.json'));
-var jslogger = util.getJsLogger();
+var loggerUtil = require('../lib/logger.js');
+var jslogger = loggerUtil.getLogger();
 var router = express.Router();
 
 router.get('/', function (req, res) {
@@ -108,10 +109,33 @@ router.delete('/users/:edxid', function (req, res) {
     }
 });
 
-// Remove User
-router.post('/users/remove/:userid', function (req, res) {
-    jslogger.info("post " + req.url);
-    // TODO: remove user
+router.get('/labs', function (req, res) {
+    jslogger.info("get " + req.url);
+    try {
+        db.getLabs(function (labs) {
+            var results = [];
+            labs.forEach(function (lab) {
+                results.push({
+                    name: lab.name,
+                    desc: lab.desc,
+                    dockerFile: lab.dockerFile,
+                    project: lab.project,
+                    creatingTime: lab.creatingTime,
+                    status: lab.status
+                });
+            });
+            res.send({
+                "result": true, "labs": results
+            });
+            jslogger.info("response: true");
+            return;
+        });
+    }
+    catch (ex) {
+        jslogger.warn(ex);
+        sendErrorMessage(res, 'internal error');
+        return;
+    }
 });
 
 function sendErrorMessage(res, msg) {

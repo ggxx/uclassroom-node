@@ -1,7 +1,3 @@
-# uclassroom/ucore-base
-#
-# VERSION               0.0.2
-
 FROM fedora/ssh
 MAINTAINER Guo Xu <ggxx120@gmail.com>
 
